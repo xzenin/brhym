@@ -1,0 +1,11 @@
+c:\Lab\python\poetry\editor\RM\bin\Debug\netcoreapp2.1\RM.deps.json
+c:\Lab\python\poetry\editor\RM\bin\Debug\netcoreapp2.1\RM.runtimeconfig.json
+c:\Lab\python\poetry\editor\RM\bin\Debug\netcoreapp2.1\RM.runtimeconfig.dev.json
+c:\Lab\python\poetry\editor\RM\bin\Debug\netcoreapp2.1\RM.dll
+c:\Lab\python\poetry\editor\RM\bin\Debug\netcoreapp2.1\RM.pdb
+c:\Lab\python\poetry\editor\RM\obj\Debug\netcoreapp2.1\RM.csprojAssemblyReference.cache
+c:\Lab\python\poetry\editor\RM\obj\Debug\netcoreapp2.1\RM.csproj.CoreCompileInputs.cache
+c:\Lab\python\poetry\editor\RM\obj\Debug\netcoreapp2.1\RM.AssemblyInfoInputs.cache
+c:\Lab\python\poetry\editor\RM\obj\Debug\netcoreapp2.1\RM.AssemblyInfo.cs
+c:\Lab\python\poetry\editor\RM\obj\Debug\netcoreapp2.1\RM.dll
+c:\Lab\python\poetry\editor\RM\obj\Debug\netcoreapp2.1\RM.pdb

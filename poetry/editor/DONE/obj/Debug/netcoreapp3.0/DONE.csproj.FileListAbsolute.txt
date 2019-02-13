@@ -1,0 +1,14 @@
+C:\Lab\python\poetry\editor\DONE\bin\Debug\netcoreapp3.0\DONE.exe
+c:\Lab\python\poetry\editor\DONE\bin\Debug\netcoreapp3.0\DONE.deps.json
+c:\Lab\python\poetry\editor\DONE\bin\Debug\netcoreapp3.0\DONE.runtimeconfig.json
+c:\Lab\python\poetry\editor\DONE\bin\Debug\netcoreapp3.0\DONE.runtimeconfig.dev.json
+C:\Lab\python\poetry\editor\DONE\bin\Debug\netcoreapp3.0\DONE.dll
+C:\Lab\python\poetry\editor\DONE\bin\Debug\netcoreapp3.0\DONE.pdb
+C:\Lab\python\poetry\editor\DONE\obj\Debug\netcoreapp3.0\DONE.csprojAssemblyReference.cache
+C:\Lab\python\poetry\editor\DONE\obj\Debug\netcoreapp3.0\DONE.Form1.resources
+C:\Lab\python\poetry\editor\DONE\obj\Debug\netcoreapp3.0\DONE.csproj.GenerateResource.cache
+C:\Lab\python\poetry\editor\DONE\obj\Debug\netcoreapp3.0\DONE.csproj.CoreCompileInputs.cache
+C:\Lab\python\poetry\editor\DONE\obj\Debug\netcoreapp3.0\DONE.AssemblyInfoInputs.cache
+C:\Lab\python\poetry\editor\DONE\obj\Debug\netcoreapp3.0\DONE.AssemblyInfo.cs
+C:\Lab\python\poetry\editor\DONE\obj\Debug\netcoreapp3.0\DONE.dll
+C:\Lab\python\poetry\editor\DONE\obj\Debug\netcoreapp3.0\DONE.pdb

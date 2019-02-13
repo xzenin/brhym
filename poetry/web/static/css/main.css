@@ -1,0 +1,30 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #444;
+  }
+    
+  .sbox {
+    width: 900px !important;
+    margin: 50px auto;
+    margin-top: 10px;
+    box-shadow: #aabbcc 3 4 ;
+  }
+  .form-para
+  {
+    border-bottom:1px solid #aabbcc;
+    text-align: left;
+  }
+  .form-para label
+  {
+    width: 200px;
+    left: 5px;
+    display: block;
+  }
+  .form-para .control
+  {
+    left: 10px;
+    width: 400px;
+    display: block;
+  }
