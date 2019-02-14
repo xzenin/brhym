@@ -1,0 +1,404 @@
+body,
+html {
+  height: 100%;
+}
+
+.kbox1 {
+  padding: 10px;
+  border: 1px solid #4466ee;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+.page
+{
+  padding: 5px;
+}
+.bar {
+height: 18px;
+background: green;
+}
+.sorter
+{
+font-weight: bolder;
+cursor: pointer;
+text-transform:uppercase;
+}
+
+i.b {
+  color: blue;
+}
+
+.complexity {
+  cursor: pointer;
+}
+
+.ngdummy {
+  display: none;
+}
+
+.overlay {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.9);
+  overflow-x: hidden;
+  transition: 0.5s;
+  text-align: center;
+  overflow: hidden;
+}
+
+.overlay-content {
+  position: relative;
+  top: 20px;
+  left: auto;
+  right: auto;
+  margin: 10px;
+
+  text-align: center;
+  padding: 16px;
+
+}
+
+.overlay a {
+  padding: 8px;
+  text-decoration: none;
+  font-size: 36px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.overlay a:hover,
+.overlay a:focus {
+  color: #f1f1f1;
+}
+
+.overlay .closebtn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 20px;
+}
+
+.navopen {
+  width: 100%;
+}
+
+.navclose {
+  width: 0%;
+}
+
+@media screen and (max-height: 500px) {
+  .overlay a {
+    font-size: 20px
+  }
+
+  .overlay .closebtn {
+    font-size: 20px;
+    top: 10px;
+    right: 12px;
+  }
+}
+
+.namegrid {
+  z-index: 300;
+  text-align: left;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: 400px;
+}
+
+.wrap {
+  width: 100%;
+  float: left;
+  overflow: hidden;
+  height: 100%;
+}
+
+.resizable {
+
+  height: 100%;
+  padding: 0;
+  display: block;
+  float: left;
+  color: #000;
+  position: relative;
+}
+
+.resizable1 {
+  width: 30%;
+  background-color: #f3f3f3;
+  float: left;
+}
+
+.resizable2 {
+  width: 70%;
+  background-color: #eaeaea;
+  float: right;
+}
+
+.resizable .inner {
+  padding: 5px;
+  overflow: hidden;
+  overflow-y: auto;
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.resizable1 .inner {
+  margin-right: 7px;
+  overflow: auto;
+  width: 100%;
+}
+
+.resizable2 .inner {
+  margin-left: 7px;
+
+  width: 100%;
+}
+
+.ui-resizable-e {
+  cursor: e-resize;
+  display: block !important;
+  width: 4px;
+  right: -7px;
+  top: 0;
+  bottom: 0;
+  background: #333;
+}
+
+
+.droptarget-table {
+  min-height: 100px;
+  min-width: 200px;
+  border: 1px solid black;
+  padding: 10px;
+}
+
+.droptarget-columns {
+  min-width: 100%;
+  min-height: 100%;
+  overflow: auto;
+  background-color: #f0f0f0;
+}
+.greynormal
+{
+  border: 1px dashed #dadada;
+  background-color: #f0f0f0;
+}
+.greyout
+{
+  border: 1px dashed #565656;
+  background-color: #f0f0ff;
+}
+
+[contentEditable=true]:empty:not(:focus):before {
+  content: attr(data-text);
+}
+
+.dropsequence {
+  min-width: 100px;
+}
+
+.attributecontainer {
+  padding: 10px;
+  text-transform: capitalize;
+}
+
+.ph2 {
+  font-size: 1.8em;
+  border-bottom: 1px solid #ededed;
+  color: #334488;
+}
+
+.th2 {
+  font-size: 1.2em;
+}
+
+.dwrap {
+ 
+}
+
+.red {
+  color: red;
+}
+
+#date-sortable,
+#content-sortable {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#date-sortable li {
+  text-align: left;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.kbox {
+  width: 100%;
+  height: 100%;
+
+}
+
+.lineblock {
+  display: block;
+  border-bottom: 1px dashed #9999CC;
+  padding-bottom: 10px;
+}
+
+.datatable th a {
+  color: #6565A0;
+  text-decoration: none
+}
+
+.datatable th a:hover {
+  color: #5959bd;
+  text-decoration: none
+}
+
+.datatable th a.sortDir.active {
+  color: #4343DC;
+  cursor: default;
+  text-decoration: none
+}
+
+.datatable table,
+th,
+td {
+  border: 1px solid grey;
+  border-collapse: collapse;
+  padding: 5px;
+}
+
+.datatable table tr:nth-child(odd) {
+  background-color: #f1f1f1;
+}
+
+.datatable table tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+.draggable
+{
+  cursor: move;
+}
+a.dropdown-item
+{
+  font-size:1em;
+}
+.dropdown
+{
+  font-size: 1em;
+}
+.dropdown a
+{
+  font-size: 1em;
+}
+
+.rule-sortable {
+list-style-type: none;
+margin: 0;
+padding: 0;
+}
+.dropdown-menu>li
+{
+padding: 0px;
+margin: 0px;
+}
+.dropdown-menu>li>a {
+display: block;
+padding:0px 5px 0px 5px;
+margin: 0px;
+font-weight: 400;
+color: #333;
+white-space: nowrap;
+}
+.rule-sortable li {
+text-align: left;
+}
+
+.ppanel
+{
+border: 1px solid #eeddcc;
+height: 100%;
+}
+.ppanel-body
+{
+font-size:80%;
+}
+
+.valuecontainer, .actioncontainer
+{
+text-align: center;
+}
+.addme, .removeme
+{
+font-size:120%;
+cursor: pointer;
+color:blue;
+}
+.table-group
+{
+width:100%;
+border: 1px solid #efefef;
+}
+.table-group td
+{
+border: 1px dashed #efefef;
+}
+
+.rulename
+{
+border: 1px inset #abcdef;
+padding: 2px;
+}
+.btnup, .btndown
+{
+display: none;
+}
+ul.solsort
+{
+font-weight: bold;
+list-style: none;
+list-style-type: none;
+margin: 0;
+padding: 0;
+}
+.solsort li
+{
+float: left;
+list-style: none;
+}
+.boxr
+{
+padding-right: 20px;
+}
+.modal
+{
+overflow: hidden !important;
+width:80%;
+}
+.disable{
+cursor: default;
+color: #999999;
+}
+.pagination ul>li>a:hover, .pagination ul>.disable>a, .pagination ul>.disable>span {
+background-color: #f5f5e5;
+}
+.sorter
+{
+font-weight: bolder;
+cursor: pointer;
+text-transform:uppercase;
+}

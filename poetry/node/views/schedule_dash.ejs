@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>
+    <%= title %> :
+    <%= subtitle %>
+  </title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link rel='stylesheet' href='/stylesheets/app.css' />
+  <link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+  <link rel='stylesheet' href='/stylesheets/bootstrap-no-icon.css' />
+  <link rel='stylesheet' href='/jquery-ui-redmond/jquery-ui.min.css' />
+
+
+  <script type="text/javascript" src="/javascripts/jquery-1.10.2.min.js"></script>
+  <script type="text/javascript" src="/jquery-ui-redmond/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="/javascripts/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/javascripts/json2.js"></script>
+  <!-- ANGULAR -->
+  <script type="text/javascript" src="/angular-1.7.2/angular.js"></script>
+
+  <!--APP HERE -->
+  <link rel='stylesheet' href='/app/rulestyle.css' />
+  <script type="text/javascript" src="/app/rulemap.js"></script>
+
+  <style>
+    .rulewrap
+    {
+      border:1px dashed #aaaaf3;
+      padding: 5px;
+      font-size:80%;
+      margin-bottom: 5px;
+    }
+    .rulewrap .ph2
+  {
+    padding: 0 0 2px 0;
+    border-bottom:1px solid #aaaaaa;
+    margin-top:2px;
+  }
+  .rulewrap .ph2 .title
+  {
+    font-size: 100%;
+  }
+  .rulewrap .ph2 .controlbox
+  {
+    float: right;
+  }
+  select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    display: inline-block;
+    height: 20px;
+    padding: 2px 4px;
+    margin-bottom: 9px;
+    font-size: 10px;
+    line-height: 14px;
+    color: #555555;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+table
+{
+  width:100%;
+}
+  </style>
+
+  <script type="text/javascript">
+    window.token = {
+      sid: '<%=sid%>',
+      ticket: 'zaqxswcde4532vfrbgt',
+      timestamp: new Date(),
+      expires: new Date() + 1
+    };
+  </script>
+
+</head>
+
+<body ng-app="rulemap">
+  <div class="page" ng-controller="RuleController">
+    <div class="mheader">
+      <%- include ang_header.ejs %>
+    </div>
+    <div class="breadcrump">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="/">Home</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="/schedule/dash">Scheduler</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Rules </li>
+          <li class="breadcrumb-item">
+            <span id="live" class="live" ng-show="loading==true">
+              <img src="/images/103.gif" style="height: 16px;" />
+            </span>
+          </li>
+        </ol>
+      </nav>
+
+    </div>
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <span>Schedules : {{ message }} </span>
+        <span class="pull-right">
+
+          <a href="/schedule/dash" class="btn-primary"> Session Key: {{ sid }} </a>
+          <a href="#" class="btn-primary" onclick="showColumns();"> Columns </a>
+          <span class="btn-primary">
+            <input type="text" ng-change="grid.pagechange()" ng-model="grid.itemsPerPage" style="margin: 1px 0 0 0; width:30px; border:0px; font-size:90% " />
+          </span>
+          <a class='btn-primary' href="/schedule/summary"> Dashboard </a>
+          <a href="#" class="btn-primary" ng-click="startOver();"> Starts Over </a>
+          <a class='btn-primary' onclick='downloadtable()'> Export </a>
+          <a class='btn-primary' href="/schedule/export"> Import </a>
+      </div>
+      <div class="panel-body" style="min-height: 400px;">
+        <div id="colcol" style="display: none; border: 1px solid #4466ee; border-radius: 5px;">
+
+        </div>
+        <div class="datatable" style="overflow: auto">
+          <table class="table table-bordered ">
+            <thead>
+              <tr>
+                <th ng-repeat="column in model.visiblecolumns | filter: { visible : true }">
+
+                  <a class="sorter" ng-click="grid.sort_by( column.name )"> {{column.name}} </a>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="item in grid.pagedItems[grid.currentPage]">
+                <td ng-repeat="column in model.visiblecolumns | filter: { visible : true }"> {{ item[column.name]}}</td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+        <div style="width:100%;">
+          <div id="mainpager" style="float: right; ">
+            <div class="pagination">
+              <ul>
+                <li ng-class="{disabled: grid.currentPage == 0}">
+                  <a href ng-click="grid.prevPage()">« Prev</a>
+                </li>
+
+                <li ng-repeat="n in grid.range(grid.pagedItems.length, grid.currentPage, grid.currentPage + grid.gap) "
+                  ng-class="{active: n == grid.currentPage, disable: n >= grid.pagedItems.length  }" ng-click="grid.setPage(n)">
+                  <a href ng-bind="n + 1">1</a>
+                </li>
+
+                <li ng-class="{disabled: (grid.currentPage) == grid.pagedItems.length - 1}">
+                  <a href ng-click="grid.nextPage()">Next »</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div></div>
+
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <span>Logs Details:</span>
+        <span class="pull-right">
+          <b class="glyphicon glyphicon-plus" onclick="debugtoggle(this);"></b>
+        </span>
+      </div>
+      <div class="panel-body">
+        <div id="debug">
+
+
+          <p ng-repeat="l in logs">
+            {{l.timestamp}} : {{l.line}}
+          </p>
+          <pre class="console">
+
+        </pre>
+        </div>
+      </div>
+    </div>
+
+    <div id="myNav" class="overlay">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      <div class="overlay-content">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <b class="pull-left">Rule Engine : <span id="status"> {{ruleprogress}} </span> <span class="live"></span>
+            </b>
+
+            <span class="pull-right">
+              <input id="sorder" style="color:#444400 ;display:none" />
+              <span id="angHashBtn"></span>
+              <b class="ruleprogress" ng-show="ruleprogress=='loading'">
+                <img src="/images/loading.gif" style="width:16px ; height: 16px;;" />
+              </b>
+              <b href="#" class="btn-primary" ng-click="fireRules()">Run Rules </b>
+
+              <b class="btn-primary" onclick="closeNav()">Close</b>
+
+            </span>
+            <span style="clear: both">
+              &nbsp;
+            </span>
+          </div>
+          <div class="panel-body" style="height:480px">
+            <div class="wrap">
+
+              <div class="resizable resizable1">
+                <div class="inner">
+
+                  <ul id="date-sortable">
+
+                    <li class="ui-state-default">
+                      <div class="ph2">
+                        Update Value Rules:
+
+                      </div>
+                      <div id="table-sortable1" class="droptarget">
+                        <div ondragstart="dragStart(event)" draggable="true" id="dragtarget_update" data-field="update"
+                          data-category="update" data-types="string">
+                          <span class="draggable"> <label class="draggable" data-fld="update"> <span class="glyphicon glyphicon-share"></span>
+                              Add Rule </label> </span>
+                        </div>
+                      </div>
+
+                    </li>
+
+                    <li class="ui-state-default">
+                      <div class="ph2">
+                        Constraint Rules:
+                      </div>
+                      <div id="table-sortable2" class="droptarget">
+                        <div ondragstart="dragStart(event)" draggable="true" id="dragtarget_constraint" data-field="constraint"
+                          data-category="constraint" data-types="string">
+                          <span class="draggable"> <label class="draggable" data-fld="constraint"> <span class="glyphicon glyphicon-share"></span>
+                              Add Rule </label> </span>
+                        </div>
+                      </div>
+
+                    </li>
+
+
+                    <li class="ui-state-default">
+                      <div class="ph2">
+                        Column Sorting Rules:
+                      </div>
+                      <div id="table-sortable4" class="droptarget">
+                        <div ondragstart="dragStart(event)" draggable="true" id="dragtarget_order" data-field="order"
+                          data-category="order" data-types="string">
+                          <span class="draggable"> <label class="draggable" data-fld="order"> <span class="glyphicon glyphicon-share"></span>
+                              Add Rule </label> </span>
+                        </div>
+                      </div>
+
+                    </li>
+                    <li class="ui-state-default">
+                      <div class="ph2">
+                        Scheduling Rules:
+                      </div>
+
+                      <div id="table-sortable5" class="droptarget">
+                        <div ondragstart="dragStart(event)" draggable="true" id="schedule1" data-field="bucket"
+                          data-category="scheduling" data-types="string">
+                          <span class="draggable"> <label class="draggable" data-fld="bucket"> <span class="glyphicon glyphicon-share"></span>
+                              Add Bucket </label> </span>
+                        </div>
+                        <div ondragstart="dragStart(event)" draggable="true" id="schedule2" data-field="start"
+                          data-category="scheduling">
+                          <span class="draggable"> <label class="draggable" data-fld="start"> <span class="glyphicon glyphicon-share"></span>
+                              Add Start Date </label> </span>
+                        </div>
+                      </div>
+
+                    </li>
+
+                  </ul>
+
+                </div>
+              </div>
+
+              <div class="resizable resizable2">
+                <div class="inner">
+                  <span id="live" class="live" ng-show="loading==true">
+                    <img src="/images/103.gif" style="height: 16px;" />
+                  </span>
+                  <div id="dropplace" data-text="Drop here..." class="droptarget-columns greynormal" ondrop="drop(event, 'all','all')"
+                    ondragover="allowDrop(event)" ondragleave="dragOut(event)">
+                    <ul id="content-sortable">
+                      <li id="c0" class="rulewrap">
+                        <div class="ph2">
+                          <span class="title">
+                            Column Update Rules:
+                          </span>
+                          <span class="controlbox">
+                            <b class="glyphicon glyphicon-minus"></b>
+                          </span>
+                        </div>
+                        <div id="mg_update_rules_container" class="rulecontainer">
+
+                          <ul id="rulegroup" class="rule-sortable">
+                            <li id="ruletemplate0" ng-repeat="rin in ruleset.env_rules" class="ruletemplate panel">
+
+                              <div class="panel-body" style="overflow: auto">
+
+                                <table>
+                                  <thead>
+                                    <tr class="tr">
+                                      <td>
+                                        <div class="pull-left">
+                                          RuleName: <input type="text" class="rulename" ng-model="rin.name" />
+                                        </div>
+                                        <div class="pull-right">
+                                          <b class="glyphicon glyphicon-new-window newwindow"></b>
+                                        </div>
+                                      </td>
+
+                                      <td>
+                                        <div> Parameters: </div>
+                                      </td>
+                                      <td style="width:20px;">
+                                        <div> Actions: </div>
+                                      </td>
+                                    </tr>
+                                  </thead>
+                                  <tbody class="rulecontainer">
+                                    <tr class="rowtemplate">
+                                      <td class='ruleplace'>
+
+                                        <div class="dropsequence attributecontainer1 ruleunit">
+                                          <div class="ppanel">
+
+                                            <div class="ppanel-body">
+                                              <table class="table-group">
+                                                <tr ng-repeat="rl in rin.rules">
+
+                                                  <td>
+                                                    <select class="pfield" ng-model="rl.field" ng-options="option as option for option in columns" />
+                                                  </td>
+                                                  <td>
+                                                    <select class="select asign" ng-model="rl.sign">
+                                                      <option selected="selected" value="equals">Equals</option>
+                                                      <option value="greaterequals">GreaterEquals</option>
+                                                      <option value="lesserequals">LesserEquals</option>
+                                                      <option value="notequals">NotEquals</option>
+                                                      <option value="greater">Greater Than</option>
+                                                      <option value="lesser">Lesser Than</option>
+                                                      <option value="like">Contains</option>
+                                                      <option value="startswith">Starts With</option>
+                                                      <option value="endswith">Ends With</option>
+                                                    </select>
+
+                                                  </td>
+                                                  <td>
+                                                    <select class="pvalue" ng-model='rl.value' ng-options="option as option for option in getoptions(rl.field)">
+
+                                                    </select>
+                                                  </td>
+                                                  <td>
+                                                    <select class="pcondition" ng-model="rl.op">
+
+                                                      <option selected="selected" value="AND">AND</option>
+                                                      <option value="OR">OR</option>
+                                                    </select>
+                                                  </td>
+                                                  <td>
+                                                    <span class="opselected"></span>
+
+                                                    <b class="glyphicon glyphicon-plus addme" ng-click="addmg(rin,rl,n)"></b>
+
+                                                    <b class="glyphicon glyphicon-remove removeme" ng-click="removemg(rin,rl,n)"></b>
+                                                  </td>
+                                                </tr>
+                                              </table>
+                                            </div>
+                                          </div>
+
+                                        </div>
+
+                                      </td>
+
+
+                                      <td>
+                                        <div class="dropsequence valuecontainer">
+                                          Set: <select class="cltype" ng-model="rin.column" ng-options="option as option for option in columns">
+                                          </select>
+                                          <p>
+                                            =
+                                          </p>
+                                        </div>
+                                        <div class="dropsequence actioncontainer">
+                                          <input type="text" ng-model="rin.given" class="avalue" />
+                                        </div>
+                                      </td>
+
+                                      <td>
+                                        <div class="red">
+                                          <b class="glyphicon glyphicon-remove-sign btnremove" ng-click="removerule( ruleset.env_rules,rin)"></b>
+                                          <b class="glyphicon glyphicon-upload btnup"></b>
+                                          <b class="glyphicon glyphicon-download btndown"></b>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+
+                            </li>
+                          </ul>
+
+
+                        </div>
+                      </li>
+                      <li id="c1" class="rulewrap">
+                        <div class="ph2">
+                          <span class="title">
+                            Constraint Rules:
+                          </span>
+                          <span class="controlbox">
+                            <b class="glyphicon glyphicon-minus"></b>
+                          </span>
+                        </div>
+                        <div id="mg_cm_rules_container" class="rulecontainer">
+
+                          <ul id="rulegroup" class="rule-sortable">
+                            <li id="ruletemplate2" ng-repeat="rin in ruleset.mg_rules" class="ruletemplate panel">
+
+                              <div class="panel-body" style="overflow: auto">
+
+                                <table>
+                                  <thead>
+                                    <tr class="tr">
+                                      <td>
+                                        <div class="pull-left">
+                                          RuleName: <input type="text" class="rulename" ng-model="rin.name" />
+                                        </div>
+                                        <div class="pull-right">
+                                          <b class="glyphicon glyphicon-new-window newwindow"></b>
+                                        </div>
+                                      </td>
+
+                                      <td>
+                                        <div> Parameters: </div>
+                                      </td>
+                                      <td style="width:20px;">
+                                        <div> Actions: </div>
+                                      </td>
+                                    </tr>
+                                  </thead>
+                                  <tbody class="rulecontainer">
+                                    <tr class="rowtemplate">
+                                      <td class='ruleplace'>
+
+                                        <div class="dropsequence attributecontainer1 ruleunit">
+                                          <div class="ppanel">
+
+                                            <div class="ppanel-body">
+                                              <table class="table-group">
+                                                <tr ng-repeat="rl in rin.rules">
+
+                                                  <td>
+                                                    <select class="pfield" ng-model="rl.field" ng-options="option as option for option in columns" />
+                                                  </td>
+                                                  <td>
+                                                    <select class="select asign" ng-model="rl.sign">
+                                                      <option selected="selected" value="equals">Equals</option>
+                                                      <option value="greaterequals">GreaterEquals</option>
+                                                      <option value="lesserequals">LesserEquals</option>
+                                                      <option value="notequals">NotEquals</option>
+                                                      <option value="greater">Greater Than</option>
+                                                      <option value="lesser">Lesser Than</option>
+                                                      <option value="like">Contains</option>
+                                                      <option value="startswith">Starts With</option>
+                                                      <option value="endswith">Ends With</option>
+                                                    </select>
+
+                                                  </td>
+                                                  <td>
+                                                    <select class="pvalue" ng-model='rl.value' ng-options="option as option for option in getoptions(rl.field)">
+
+                                                    </select>
+                                                  </td>
+                                                  <td>
+                                                    <select class="pcondition" ng-model="rl.op">
+
+                                                      <option selected="selected" value="AND">AND</option>
+                                                      <option value="OR">OR</option>
+                                                    </select>
+                                                  </td>
+                                                  <td>
+                                                    <span class="opselected"></span>
+
+                                                    <b class="glyphicon glyphicon-plus addme" ng-click="addmg(rin,rl,n)"></b>
+
+                                                    <b class="glyphicon glyphicon-remove removeme" ng-click="removemg(rin,rl,n)"></b>
+                                                  </td>
+                                                </tr>
+                                              </table>
+                                            </div>
+                                          </div>
+
+                                        </div>
+
+                                      </td>
+
+
+                                      <td>
+                                        <div class="dropsequence valuecontainer">
+                                          Rule Type: <select type="text" data-calendar="test" class="ptype" onchange="changeTextToDate(this)">
+                                            <option selected="selected" value="days">Days</option>
+                                            <option value="date">Date</option>
+                                          </select>
+                                        </div>
+                                        <div class="dropsequence actioncontainer">
+                                          <input type="text" ng-model="rin.given" class="avalue" />
+                                        </div>
+                                      </td>
+
+                                      <td>
+                                        <div class="red">
+                                          <b class="glyphicon glyphicon-remove-sign btnremove" ng-click="removerule(ruleset.mg_rules, rin)"></b>
+                                          <b class="glyphicon glyphicon-upload btnup"></b>
+                                          <b class="glyphicon glyphicon-download btndown"></b>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+
+                            </li>
+                          </ul>
+
+
+                        </div>
+                      </li>
+
+                      <li id="c4" class="rulewrap">
+
+                        <div class="ph2">
+                          <span class='title'>
+                            Column Sorting Rules:
+                          </span>
+                          <span class="controlbox">
+                            <b class="glyphicon glyphicon-minus"></b>
+                          </span>
+                        </div>
+
+                        <div id="order_cm_rules_container" class="rulecontainer" data-text="Drop here...">
+                          <table>
+                            <thead>
+                              <tr class="tr">
+                                <td class='dwrap'>
+                                  <div class="th2"> Attributes: </div>
+                                </td>
+                                <td class='dwrap'>
+                                  <div class="th2"> Order: </div>
+                                </td>
+                                <td class='dwrap'>
+                                  <div class="th2">Type: </div>
+                                </td>
+                                <td class='dwrap'>
+                                  <div class="th2">Direction: </div>
+                                </td>
+                                <td class='dwrap'>
+                                  <div class="th2"> Actions: </div>
+                                </td>
+                              </tr>
+                            </thead>
+                            <tbody class="rulecontainer">
+                              <tr class="rowtemplate" style="width:100%;" ng-repeat="rin in ruleset.order_rules ">
+                                <td class='dwrap'>
+                                  <div class="dropsequence attributecontainer">
+                                    <select ng-model="rin.field" ng-options="option as option for option in columns" />
+                                  </div>
+                                </td>
+
+                                <td class='dwrap'>
+                                  <div class="dropsequence valuecontainer">
+                                    <input type="text" disabled="disabled" class="pvalue" ng-model="rin.order" />
+                                  </div>
+                                </td>
+                                <td class='dwrap'>
+                                  <div class="dropsequence valuecontainer">
+                                    <select type="text" ng-model="rin.type" data-calendar="test" class="ptype">
+                                      <option value="integer">integer</option>
+                                      <option selected="selected" value="string">string</option>
+                                      <option value="date">date</option>
+                                    </select>
+                                  </div>
+                                </td>
+                                <td class='dwrap'>
+                                  <div class="dropsequence valuecontainer">
+                                    <select type="text" ng-model="rin.direction" data-calendar="test" class="pdirection">
+                                      <option value="asc" selected="selected">asc</option>
+                                      <option value="desc">desc</option>
+                                    </select>
+                                  </div>
+                                </td>
+                                <td class='dwrap'>
+                                  <div class="dropsequence editcontainer red">
+                                    <span class="glyphicon glyphicon glyphicon-remove-sign remove" ng-click="removeOrderInstance(rin,index)"><span>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </li>
+                      <li id="c5" class="rulewrap">
+                        <div class="ph2">
+                          <span class="title">
+                            Scheduling Rules:
+                          </span>
+                          <span class="controlbox">
+                            <b class="glyphicon glyphicon-minus"></b>
+                          </span>
+                        </div>
+
+                        <div id="scheduling_cm_rules_container" class="rulecontainer" data-text="Drop here...">
+                          <table>
+                            <thead>
+                              <tr class="tr">
+                                <td class='dwrap'>
+                                  <div class="th2"> Attributes: </div>
+                                </td>
+                                <td class='dwrap'>
+                                  <div class="th2"> Classifier: </div>
+                                </td>
+                                <td class='dwrap'>
+                                  <div class="th2"> Take: </div>
+                                </td>
+                                <td class='dwrap'>
+                                  <div class="th2"> Actions: </div>
+                                </td>
+                              </tr>
+                            </thead>
+                            <tbody class="rulecontainer">
+                              <tr class="rowtemplate" style="width:100%;" ng-repeat="rin in ruleset.scheduling_rules ">
+                                <td class='dwrap'>
+                                  <div class="dropsequence attributecontainer">
+                                    <label> {{ rin.name}} </label>
+                                  </div>
+                                </td>
+
+                                <td class='dwrap'>
+                                  <div class="dropsequence valuecontainer" ng-switch on="rin.name">
+                                    <input type="text" ng-switch-when="bucket" ng-model="rin.classifier" class="pvalue" />
+                                    <label type="text" ng-switch-when="start" ng-model="rin.classifier" class="pvalue">
+                                      {{rin.classifier}} </label>
+                                  </div>
+                                </td>
+
+                                <td class='dwrap'>
+                                  <div class="dropsequence valuecontainer" ng-switch on="rin.name">
+                                    <input type="text" ng-switch-when="bucket" ng-model="rin.duration" class="rin.cls" />
+                                    <input type="text" ng-switch-when="start" class="calendar" ng-model="rin.duration"
+                                      class="rin.cls" />
+                                  </div>
+                                </td>
+
+                                <td class='dwrap'>
+                                  <div class="dropsequence editcontainer red">
+                                    <span class="glyphicon glyphicon glyphicon-remove-sign remove" ng-click="removeSchedulingInstance(rin)"><span>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div id="myColumn" class="modal fade  modal-lg" role="dialog">
+      <div class="modal-dialog  modal-lg">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Select Columns</h4>
+          </div>
+          <div class="modal-body" style="overflow: auto; width:90%;">
+            <ul class="solsort">
+              <li ng-repeat="col in model.visiblecolumns">
+                <span class="boxr">
+                  <i ondblclick="setColumnName(this)"> {{ col.name }} </i> <input type="checkbox" ng-model="col.visible" />
+                </span>
+              </li>
+            </ul>
+            <div style="clear:both">`
+            </div>
+          </div>
+          <div class="modal-footer">
+            <span class="pull-left coladder" style="display: none">
+              <input type="text" id="extracolumn" style="height: 24px; margin-top: 6px;" ng-model="extracolumn" />
+              <b ng-click="addExtraColumn('add');" class="btn-primary"> Add Column </b>
+              <b ng-click="addExtraColumn('delete');" class="btn-primary"> Delete Column </b>
+            </span>
+            <button type="button" class="btn btn-default" onclick="$('.coladder').show()">Manage Columns</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    @copyright;
+    <%= foottext %>
+  </footer>
+  <script type="text/javascript">
+    function changeTextToDate(source) {
+      var valdate = $(source).val();
+      var target = $(source).closest("tr").find(".avalue");
+      if (valdate == "date") {
+        $(target).datepicker();
+      } else {
+        $(target).datepicker("destroy");
+      }
+    }
+
+    function showColumns() {
+      $("#myColumn").modal();
+      $(".coladder").hide();
+    }
+
+    function hideColumns() {
+      $("#myColumn").modal('hide');
+      $(".coladder").hide();
+    }
+
+    function setColumnName(el) {
+      var text = $(el).text();
+      var scope = angular.element($("#angHashBtn")).scope();
+      scope.extracolumn = text;
+      scope.$apply();
+      $(".coladder").show();
+    }
+
+    function showConfiguration() {
+      $("#myNav").addClass("navopen");
+      $("#myNav").removeClass("navclose");
+
+    }
+
+    function hideConfiguration() {
+      $("#myNav").addClass("navclose");
+      $("#myNav").removeClass("navopen");
+    }
+
+    function closeNav() {
+      $("#myNav").removeClass("navopen");
+      $("#myNav").addClass("navclose");
+    }
+  </script>
+  <script type="text/javascript">
+    $(function () {
+
+      $("#dropplace").removeClass("greyout");
+      $("#dropplace").addClass("greynormal");
+      $(".controlbox .glyphicon").click(function () {
+        var icon = $(this);
+        ruletoggle(icon, ".")
+      });
+    });
+
+    function showLive(str) {
+      $(".live").html(str);
+    }
+
+    function dragStart(event) {
+      //var selector = "#" + event.target.id;
+      var field = $(event.target).data("field");
+      var category = $(event.target).data("category");
+      var json = {
+        field: field,
+        type: "days",
+        category: category
+      };
+      //event.dataTransfer.setData("field", field);
+      //event.dataTransfer.setData("selector", selector);
+      event.dataTransfer.setData("json", JSON.stringify(json));
+      showLive(JSON.stringify(json));
+    }
+
+    function dragOut(event) {
+      $("#dropplace").removeClass("greynormal");
+      $("#dropplace").addClass("greyout");
+      event.preventDefault();
+    }
+
+    function allowDrop(event) {
+      $("#dropplace").removeClass("greynormal");
+      $("#dropplace").addClass("greyout");
+      event.preventDefault();
+    }
+
+    function drop(event, src, dest) {
+      event.preventDefault();
+      var scope = angular.element($("#angHashBtn")).scope();
+      var json = event.dataTransfer.getData("json");
+      //var selector = event.dataTransfer.getData("selector");
+      //var targetid = $(event.target).attr("id");
+      var args = JSON.parse(json);
+
+
+      $("#dropplace").removeClass("greyout");
+      $("#dropplace").addClass("greynormal");
+
+      if (json) {
+        var field = args.field;
+        switch (args.category) {
+          case 'update':
+            scope.addUpdateRule(field, args);
+            break;
+          case 'constraint':
+            scope.addMGRule(field, args);
+            break;
+          case 'order':
+            scope.addOrderRule(field, args);
+            break;
+          case 'scheduling':
+            scope.addScheduleRule(field, args);
+            break;
+          default:
+            alert("Not Defined SRC :" + src + " ON " + field);
+        }
+
+        scope.$apply();
+
+        $(document).find(".calendar").datepicker();
+        $(document).find(".ptype").each(function (i, item) {
+          if ($(item).data("calendar") == "test") {
+            changeTextToDate($(item));
+          }
+        });
+
+      }
+    }
+  </script>
+  <script type="text/javascript">
+    var areRulesChanged = false;
+
+    $(function () {
+      $(".resizable1").resizable({
+        autoHide: true,
+        handles: 'e',
+        resize: function (e, ui) {
+          var parent = ui.element.parent();
+          //alert(parent.attr('class'));
+          var remainingSpace = parent.width() - ui.element.outerWidth(),
+            divTwo = ui.element.next(),
+            divTwoWidth = (remainingSpace - (divTwo.outerWidth() - divTwo.width())) / parent.width() * 100 +
+            "%";
+          divTwo.width(divTwoWidth);
+        },
+        stop: function (e, ui) {
+          var parent = ui.element.parent();
+          ui.element.css({
+            width: ui.element.width() / parent.width() * 100 + "%",
+          });
+        }
+      });
+    });
+  </script>
+
+  <script type="text/javascript">
+    var areRulesChanged = false;
+    $(function () {
+      $("#debug").hide();
+    });
+
+    function ruletoggle(el) {
+      var b = $(el);
+      var next = b.closest(".rulewrap").find(".rulecontainer");
+      if (b.hasClass("glyphicon-plus")) {
+        $(next).show();
+        b.addClass("glyphicon-minus");
+        b.removeClass("glyphicon-plus");
+      } else {
+        $(next).hide();
+        b.removeClass("glyphicon-minus")
+        b.addClass("glyphicon-plus");
+      }
+    }
+
+    function debugtoggle(el) {
+      var b = $(el);
+      if (b.hasClass("glyphicon-plus")) {
+        $("#debug").show();
+        b.addClass("glyphicon-minus");
+        b.removeClass("glyphicon-plus");
+      } else {
+        $("#debug").hide();
+        b.removeClass("glyphicon-minus")
+        b.addClass("glyphicon-plus");
+      }
+    }
+
+    function log(str) {
+      var message = " No message";
+      if (typeof (str) == "string") {
+        message = str;
+      } else if (typeof (str) == "object") {
+        message = JSON.stringify(str, null, 4);
+      } else {
+        message = ":" + str;
+      }
+      message += $(".console").html();
+      $(".console").html(message);
+    }
+
+    function downloadtable() {
+      download();
+    }
+
+    function download() {
+      var iframe = $("<iframe style='width:0;height:0'/>");
+      var sidWithExtra = window.token.sid;
+      var envgeturl = "/db/download?dbfile=" + sidWithExtra + "&reset=false";
+      iframe.attr("src", envgeturl);
+      $(document.body).append(iframe);
+    }
+  </script>
+</body>
+
+</html>

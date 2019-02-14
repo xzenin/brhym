@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %> :   Project Task Manager </title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/app.css' />
+    <link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+    <style>
+        
+      .index-box-wrap
+      {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 50%;
+        margin-top: 70px;
+        text-align: center;
+      }
+
+      .index-page-box
+      {
+        border: 1px solid #446688;
+        box-shadow: 4px 4px 2px #4488aa;
+        padding: 10px;
+        color:#DD3344;
+        background-color: #fafafa;
+        min-height: 400px;
+        opacity: 0.9;
+        /* background-image: url(/images/dsn2.jpg); */
+      }
+
+      a.big-area-button
+      {
+      background: #4488aa;
+      color :#ededed;
+      padding: 10px;
+      border-radius: 4px;
+      border: 2px solid #446688;
+      cursor: pointer;
+      margin: 10px;
+
+      }
+
+      a.big-area-button:hover
+      {
+        color:#ffffff;
+        text-decoration: none; 
+      }
+
+      .workarea
+      {
+        margin: 10px;
+        padding: 10px;
+        text-align: center;
+        font-size:1.4em;
+      }
+      .index-title
+      {
+        font-size: 4em;
+        text-shadow: 2px 2px #4488aa;
+        font-weight: bolder;
+      }
+      .index-desc
+      {
+        font-size:1.8em;
+      }
+      .creditarea
+      {
+        margin: 10px;
+        padding: 10px;
+        text-align: justify;
+        border:1px solid #ededed;
+        font-size:0.6em;
+        position: relative;
+        bottom: 0;
+        color:#2222dd;
+        margin-top: 50px;
+      }
+      .versionarea
+      {
+        text-align: right;
+        padding: 10px;
+      }
+      .logo
+      {
+        width:70px;
+        height: 30px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="index-box-wrap">
+      <div class="index-page-box">
+          <div class="index-title">  <span class="glyphicon glyphicon-fire"></span> <%= title %></div>
+          <div class="index-desc"><%= desc %> </div>
+          <hr/>
+          <div class="workarea">            
+            <a class="big-area-button" href="/schedule/start">
+             <span class="glyphicon glyphicon-time"></span>    Dashboard
+            </a>
+            <a class="big-area-button" href="/schedule/dash">
+             <span class="glyphicon glyphicon-gift"></span>   Help
+            </a>
+        </div>
+        <div class="creditarea">            
+          <span class="glyphicon glyphicon-hand-right"></span>
+          Task Manager is integrating a set of status tracking tools and reporting the status in a single dashboard.
+          At present, it would consolidate RTC, BugZila and JIRA data sources. The Files supported here is Excel
+          and will continue support JSON, XML and CSV files. 
+        </div>
+        <div class="versionarea">
+        <img src="/images/bang.jpg" class="logo pull-left"/>  <%= title %> Version: <%= source.version %>  <a class="hidden" href="/test/"> | Test</a>
+        </div>
+      </div>
+    </div>
+   
+  </body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>
+    <%= title %> :
+    <%= subtitle %>
+  </title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link rel='stylesheet' href='/stylesheets/app.css' />
+  <link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+  <link rel='stylesheet' href='/stylesheets/bootstrap-no-icon.css' />
+  <link rel='stylesheet' href='/jquery-ui-redmond/jquery-ui.min.css' />
+
+
+  <script type="text/javascript" src="/javascripts/jquery-1.10.2.min.js"></script>
+  <script type="text/javascript" src="/jquery-ui-redmond/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="/javascripts/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/javascripts/json2.js"></script>
+    <!-- ANGULAR -->
+    <script type="text/javascript" src="/angular-1.7.2/angular.js"></script>
+
+    <!--APP HERE -->
+    <link rel='stylesheet' href='/app/rulestyle.css' />
+    <script type="text/javascript" src="/app/rulemap.js"></script>
+
+  <script type="text/javascript">
+    window.token = {
+      sid: '<%=sid%>',
+      ticket: 'zaqxswcde4532vfrbgt',
+      timestamp: new Date(),
+      expires: new Date() + 1
+    };
+  </script>
+
+</head>
+
+<body ng-app="rulemap">
+  <div class="page" ng-controller="RuleController">
+    <div class="mheader">
+      <%- include ang_header.ejs %>
+    </div>
+    <div class="breadcrump">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="/">Home</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="/schedule/dash">Scheduler</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Rules </li>
+          <li class="breadcrumb-item">
+          
+          </li>
+        </ol>
+      </nav>
+
+    </div>
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <span>বাংলা কবিতার ভূবন, আগামীর বাংলা, আগ্রগতির অপার দুনিয়া </span>
+      </div>
+      <div class="panel-body" style="min-height: 400px;">
+    
+        <form method="post" style="border:1px; padding:10px;">
+          <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="seed">প্রথম শব্দ ! </label>
+                  <textarea class="form-control" id="seed" aria-describedby="emailHelp" placeholder="Enter Text"></textarea>
+                  <small id="emailHelp" class="form-text text-muted">যে শব্দ দিয়ে বাক্য শুরু করতে চান ! </small>
+                </div>
+                <div class="form-group">
+                  <label for="diversity"> কত শব্দের ভিতর </label>
+                  <input type="text" class="form-control" id="diversity" value="5" placeholder="Enter Text">
+      
+                </div>
+      
+                <div class="form-group">
+                  <label for="words">অন্যান্য শব্দ যা বাক্যে ব্যবহার করা যাবে </label>
+                  <textarea class="form-control" id="words" placeholder="Enter Text"></textarea>
+      
+                </div>
+                <div class="form-group">
+                  <input type="button" onclick="getText()" class="btn btn-success" value="নির্মাণ" />
+      
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="result">ফলাফলঃ</label>
+                  <textarea class="form-control" id="result" rows="10" placeholder="Enter Text"></textarea>
+      
+                </div>
+              </div>
+          </div>
+
+        
+        </form>
+     
+      </div>
+    </div>
+
+  </div>
+  <footer class="footer">
+    @copyright;
+    <%= foottext %>
+  </footer>
+  <script type="text/javascript">
+  </script>
+  <script type="text/javascript">
+      function getText() {
+      var url = "http://127.0.0.1:8098/api/v1/suggest";
+      var args = {
+        query:
+        {
+          seed: $("#seed").val(),
+          diversity:$("#diversity").val(),
+          words: $("#words").val()
+        }
+      };
+      $.ajax({
+        crossDomain: true,
+        url: url,
+        type: "POST",
+        method: "POST",
+        dataType: 'json',
+        config: {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        },
+        crossDomain: true,
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(args),
+        success: function (d) {
+          $("#result").val(JSON.stringify(d));
+        },
+        error: function (e, b, c) {
+          alert(JSON.stringify(e));
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>

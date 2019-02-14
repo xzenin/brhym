@@ -1,0 +1,97 @@
+<nav id="tophead" class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/"> {{ title }} : {{ subtitle }} </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                <li class="menu-item"><a href="/">Home</a></li>
+                <li class="menu-item dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Task Dashboard<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li class="menu-item active"><a href="/schedule/summary">Dashboard</a></li>
+                        <li class="menu-item active"><a href="/schedule/dash">All Task</a></li>
+                        <li class="menu-item"><a href="/schedule/export"> Import Data </a></li>
+                        <li class="menu-item"><a href="/schedule/graph?x_col=Component&y_col=Reporting_Status">Status View </a></li>
+                        <li class="menu-item"><a href="/schedule/graph?x_col=Component&y_col=Primary_Owner">Developer View </a></li>
+                        <li class="menu-item"><a href="/schedule/graph?x_col=Primary_Owner&y_col=Component">Component View </a></li>
+                    </ul>
+                </li>
+                <li class="menu-item dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tool<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li class="menu-item ">
+                            <a href="#" onclick="downloadPDF()">PDF</a>
+                        </li>
+                        <li class="menu-item ">
+                            <a href="/schedule/excel" > Edit</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-item dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Help<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li class="menu-item ">
+                            <a href="/about">About</a>
+                        </li>
+                        <li class="menu-item ">
+                            <a href="/setting">Settings</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li class="menu-item">
+                    <% if( true) { %>
+                    <a href="/auth/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a>
+                    <%} else {%>
+                    <a href="/auth/login"><span class="glyphicon glyphicon-log-in"></span>Login </a>
+                    <% } %>
+                </li>
+            </ul>
+
+        </div>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        var doc = new jsPDF();
+        var specialElementHandlers = {
+            '#editor': function (element, renderer) {
+                return true;
+            }
+        };
+
+        function downloadPDF() {
+
+            str = "This will launch a print screen, please change your printer \n ";
+            str += " to PDF Printer. Chrome has inbuilt PDF printer. This will \n "
+            str += " save your page into a PDF document.";
+            alert(str);
+            var url = window.location.href;
+            url = url.replace(/^([#]*)/g, '');
+            url = url.replace(/([#]*)$/g, '');
+            url = url + "?p=p";
+            var w = window.open(url, 'PDF_Printer','height=400,width=980');
+            window.setTimeout( function(){ 
+                $(w.document).find("#tophead").hide();  
+                $(w.document).find(".panel").css("border", "0px solid #fff");                            
+            }, 500);
+            window.setTimeout( function(){ 
+                w.window.print();
+                w.document.close();
+            }, 2000);
+
+            //window.print(); 
+        }
+    </script>
+    <div id="editor"></div>
+</nav>

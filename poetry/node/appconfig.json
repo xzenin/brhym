@@ -1,0 +1,77 @@
+{
+    "config":
+    {
+        "defaultdb":
+        {
+            "db": "BIL9JULY",
+            "hostname": "9.17.237.145",
+            "port": "50050",
+            "username": "administrator",
+            "password": "Mount@1n"
+        },
+        "defaultuser":
+        {
+            "guid":"55395694-39a8-4d2d-b2f8-03db68437a68",
+            "userid":"admin@any.domain.com",
+            "username":"admin",
+            "password":"Quit@SmokeIn2018",
+            "firstname":"Admin",
+            "lastname": "Console",
+            "mob": "9887654321"
+        },
+        "localdb_1":
+        {
+            "db": "scopedb",
+            "hostname": "9.17.237.180",
+            "port": "50020",
+            "username": "db2admin",
+            "password": "H@2vp0wer"
+        },
+        "localdb":
+        {
+            "db": "scopedb",
+            "hostname": "10.155.238.228",
+            "port": "50000",
+            "username": "db2admin",
+            "password": "H@2vp0wer"
+        },
+        "schema": "SCOPE" 
+    },
+    "app":
+    {
+        "name": "SQUAD",
+        "port": "4100"
+    },
+    "cookies":
+    {
+        "session": "squad_sid",
+        "user":"user"
+    },
+    "version":
+    {
+        "major":"0",
+        "minor":"9.2",
+        "name" : "squad"
+    },
+    "l_folder":
+    {
+        "dataroot":"/usr/src/temp/",
+        "log": "/usr/src/temp/log/",
+        "db": "/usr/src/temp/db/",
+        "upload": "/usr/src/temp/upload"
+    },
+    "folder":
+    {
+        "dataroot":"c:\\temp2\\",
+        "log": "c:\\temp2\\log\\",
+        "db": "c:\\temp2\\db\\",
+        "upload": "c:\\temp2\\upload\\"
+    },
+    "copyright":
+    {
+        "title": "SQUAD",
+        "subtitle": "Task Integrator",
+        "desc" : "Simple & Quick Access and Dashboard",
+        "foottext": "@PIJUSH All Rights Reserved."
+    }
+}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>
+    <%= title %> :
+    <%= subtitle %>
+  </title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link rel='stylesheet' href='/stylesheets/app.css' />
+  <link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+  <link rel='stylesheet' href='/stylesheets/bootstrap-no-icon.css' />
+  <link rel='stylesheet' href='/jquery-ui-redmond/jquery-ui.min.css' />
+
+
+  <script type="text/javascript" src="/javascripts/jquery-1.10.2.min.js"></script>
+  <script type="text/javascript" src="/jquery-ui-redmond/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="/javascripts/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/javascripts/json2.js"></script>
+  <!-- ANGULAR -->
+  <script type="text/javascript" src="/angular-1.7.2/angular.js"></script>
+
+  <!--APP HERE -->
+  <link rel='stylesheet' href='/app/rulestyle.css' />
+  <script type="text/javascript" src="/app/rulemap.js"></script>
+
+  <style>
+    .rulewrap
+    {
+      border:1px dashed #aaaaf3;
+      padding: 5px;
+      font-size:80%;
+      margin-bottom: 5px;
+    }
+    .rulewrap .ph2
+  {
+    padding: 0 0 2px 0;
+    border-bottom:1px solid #aaaaaa;
+    margin-top:2px;
+  }
+  .rulewrap .ph2 .title
+  {
+    font-size: 100%;
+  }
+  .rulewrap .ph2 .controlbox
+  {
+    float: right;
+  }
+  select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    display: inline-block;
+    height: 20px;
+    padding: 2px 4px;
+    margin-bottom: 9px;
+    font-size: 10px;
+    line-height: 14px;
+    color: #555555;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+table
+{
+  width:100%;
+}
+  </style>
+
+  <script type="text/javascript">
+    window.token = {
+      sid: '<%=sid%>',
+      ticket: 'zaqxswcde4532vfrbgt',
+      timestamp: new Date(),
+      expires: new Date() + 1
+    };
+  </script>
+
+</head>
+
+<body ng-app="rulemap">
+  <div class="page" ng-controller="RuleController">
+    <div class="mheader">
+      <%- include ang_header.ejs %>
+    </div>
+    <div class="breadcrump">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="/">Home</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="/schedule/dash">Scheduler</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Rules </li>
+          <li class="breadcrumb-item">
+            <span id="live" class="live" ng-show="loading==true">
+              <img src="/images/103.gif" style="height: 16px;" />
+            </span>
+          </li>
+        </ol>
+      </nav>
+
+    </div>
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <span>Dashboard here </span>
+      </div>
+      <div class="panel-body" style="min-height: 400px;">
+    
+        <a class="btn btn-lg btn-primary" href="/schedule/text">Text Generation</a>
+        <a class="btn btn-lg btn-primary" href="/schedule/test">Help</a>
+     
+      </div>
+    </div>
+
+  </div>
+  <footer class="footer">
+    @copyright;
+    <%= foottext %>
+  </footer>
+  <script type="text/javascript">
+  </script>
+
+</body>
+
+</html>
