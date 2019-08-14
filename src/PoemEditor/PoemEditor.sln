@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29025.244
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoemEditor", "PoemEditor\PoemEditor.csproj", "{5FBA645E-3686-4531-92B0-907A152700E7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5FBA645E-3686-4531-92B0-907A152700E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FBA645E-3686-4531-92B0-907A152700E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FBA645E-3686-4531-92B0-907A152700E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FBA645E-3686-4531-92B0-907A152700E7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D67560CE-0E30-4013-9890-4712B70C3407}
+	EndGlobalSection
+EndGlobal
