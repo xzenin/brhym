@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace PoemEditor
 {
@@ -22,10 +23,14 @@ namespace PoemEditor
         string defaultFile = "_default.json";
         Option option = new Option();
         long sequence = 10000000;
+        private readonly SynchronizationContext synchronizationContext = null;
+        private DateTime previousTime = DateTime.Now;
+        List<LikeDictionary> bangla = new List<LikeDictionary>();
         public MainEditor()
         {
             InitializeComponent();
             option.FileName = defaultFile;
+            synchronizationContext = SynchronizationContext.Current;
         }
 
         private void MainEditor_Load(object sender, EventArgs e)
@@ -133,7 +138,8 @@ namespace PoemEditor
                 Cursor.Current = Cursors.Default;
             }
         }
-        private void WriteLine(string line) {
+        private void WriteLine(string line)
+        {
             textBoxConsole.Text += Environment.NewLine + line;
         }
 
@@ -149,24 +155,25 @@ namespace PoemEditor
             string guessWord = richTextBoxEditor.Text;
             int start = richTextBoxEditor.SelectionStart;
             int previousSpace = 0;
-            for (int i = start-1; i >= 0; i--) {
+            for (int i = start - 1; i >= 0; i--)
+            {
                 char ch = richTextBoxEditor.Text[i];
                 previousSpace = i;
                 if (char.IsWhiteSpace(ch))
-                {                  
+                {
                     break;
                 }
             }
             int nextSpace = start;
-            for (int i = start; i < richTextBoxEditor.Text.Length; )
+            for (int i = start; i < richTextBoxEditor.Text.Length;)
             {
                 char ch = richTextBoxEditor.Text[i];
                 nextSpace = ++i;
                 if (char.IsWhiteSpace(ch))
-                {              
+                {
                     break;
                 }
-               
+
             }
             if (previousSpace >= nextSpace)
             {
@@ -178,7 +185,87 @@ namespace PoemEditor
                 int totalchar = nextSpace - previousSpace;
                 guessWord = richTextBoxEditor.Text.Substring(previousSpace, totalchar);
             }
+            guessWord = guessWord.Trim();
             toolStripStatusCurrentWord.Text = guessWord;
+            var k = SuggestWord(guessWord);
+            k.Wait(1000);
+        }
+
+        private async Task SuggestWord(string word)
+        {
+            await Task.Run(() =>
+            {
+                UpdateUI(word);
+            });
+        }
+        public void UpdateUI(string word)
+        {
+            if (string.IsNullOrEmpty(word)) return;
+            var timeNow = DateTime.Now;
+
+            if ((DateTime.Now - previousTime).Milliseconds <= 50) return;
+
+            synchronizationContext.Post(new SendOrPostCallback(o =>
+            {
+                Text = @"Word " + word;
+                if (!bangla.Any())
+                {
+                    ReadDictionary();
+                }
+                var suggestion = StartsWith(word);
+                listBoxSuggestion.Items.Clear();
+                listBoxSuggestion.Items.AddRange(suggestion.Select(x => x.Word).Take(100).ToArray());
+                textBoxTheWord.Text = word;
+                comboBoxTheWord.Items.Clear();
+                comboBoxTheWord.Items.AddRange(suggestion.Select(x => x.Word).Take(20).ToArray());
+
+            }), word);
+
+            previousTime = timeNow;
+        }
+        private List<LikeWord> StartsWith(string word)
+        {
+            List<LikeWord> likes = new List<LikeWord>();
+            char firstChar = word[0];
+            var dic = bangla.Where(x => x.Start == firstChar).FirstOrDefault();
+            if (dic == null)
+            {
+                likes.Add(
+                    new LikeWord()
+                    {
+                        Word = word,
+                        ID = 0,
+                        On = DateTime.Now,
+                        POS = "",
+                        Source = "temp"
+                    });
+            }
+            else
+            {
+                likes = dic.WordList.Where(x => x.Word.StartsWith(word)).ToList();
+            }
+            return likes;
+        }
+        private void ReadDictionary()
+        {
+
+            try
+            {
+                //bangla.Clear();
+                //Cursor.Current = Cursors.WaitCursor;
+                string fullpath = Path.Combine(option.Location.DBFolder, "repo");
+                DirectoryInfo dr = new DirectoryInfo(fullpath);
+                foreach (var file in dr.GetFiles("*.json"))
+                {
+                    var content = File.ReadAllText(file.FullName);
+                    LikeDictionary dictionary = JsonConvert.DeserializeObject<LikeDictionary>(content);
+                    bangla.Add(dictionary);
+                }
+            }
+            catch (Exception cx)
+            {
+
+            }
         }
     }
 }
