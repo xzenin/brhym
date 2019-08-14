@@ -58,6 +58,12 @@
             this.Console = new System.Windows.Forms.TabPage();
             this.textBoxConsole = new System.Windows.Forms.TextBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusCursorPosition = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusCurrentWord = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelLeft.SuspendLayout();
             this.panelRight.SuspendLayout();
@@ -70,6 +76,12 @@
             // 
             // statusStrip1
             // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1,
+            this.toolStripStatusCursorPosition,
+            this.toolStripStatusLabel2,
+            this.toolStripStatusLabel3,
+            this.toolStripStatusCurrentWord});
             this.statusStrip1.Location = new System.Drawing.Point(0, 428);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(800, 22);
@@ -211,6 +223,8 @@
             this.richTextBoxEditor.Size = new System.Drawing.Size(800, 404);
             this.richTextBoxEditor.TabIndex = 0;
             this.richTextBoxEditor.Text = "";
+            this.richTextBoxEditor.SelectionChanged += new System.EventHandler(this.RichTextBoxEditor_SelectionChanged);
+            this.richTextBoxEditor.KeyUp += new System.Windows.Forms.KeyEventHandler(this.RichTextBoxEditor_KeyUp);
             // 
             // panelRight
             // 
@@ -324,6 +338,36 @@
             this.splitter1.TabIndex = 4;
             this.splitter1.TabStop = false;
             // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(91, 17);
+            this.toolStripStatusLabel1.Text = "Cursor Position:";
+            // 
+            // toolStripStatusCursorPosition
+            // 
+            this.toolStripStatusCursorPosition.Name = "toolStripStatusCursorPosition";
+            this.toolStripStatusCursorPosition.Size = new System.Drawing.Size(13, 17);
+            this.toolStripStatusCursorPosition.Text = "0";
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(10, 17);
+            this.toolStripStatusLabel2.Text = "|";
+            // 
+            // toolStripStatusLabel3
+            // 
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(82, 17);
+            this.toolStripStatusLabel3.Text = "Current Word:";
+            // 
+            // toolStripStatusCurrentWord
+            // 
+            this.toolStripStatusCurrentWord.Name = "toolStripStatusCurrentWord";
+            this.toolStripStatusCurrentWord.Size = new System.Drawing.Size(10, 17);
+            this.toolStripStatusCurrentWord.Text = ".";
+            // 
             // MainEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -338,6 +382,8 @@
             this.Name = "MainEditor";
             this.Text = "Edit it....";
             this.Load += new System.EventHandler(this.MainEditor_Load);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panelLeft.ResumeLayout(false);
@@ -386,6 +432,11 @@
         private System.Windows.Forms.TextBox textBoxTheWord;
         private System.Windows.Forms.TextBox textBoxConsole;
         private System.Windows.Forms.ToolStripMenuItem readWordsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusCursorPosition;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusCurrentWord;
     }
 }
 

@@ -136,5 +136,49 @@ namespace PoemEditor
         private void WriteLine(string line) {
             textBoxConsole.Text += Environment.NewLine + line;
         }
+
+        private void RichTextBoxEditor_SelectionChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void RichTextBoxEditor_KeyUp(object sender, KeyEventArgs e)
+        {
+            var posInLine = richTextBoxEditor.SelectionStart - richTextBoxEditor.GetFirstCharIndexOfCurrentLine();
+            toolStripStatusCursorPosition.Text = "" + posInLine;
+            string guessWord = richTextBoxEditor.Text;
+            int start = richTextBoxEditor.SelectionStart;
+            int previousSpace = 0;
+            for (int i = start-1; i >= 0; i--) {
+                char ch = richTextBoxEditor.Text[i];
+                previousSpace = i;
+                if (char.IsWhiteSpace(ch))
+                {                  
+                    break;
+                }
+            }
+            int nextSpace = start;
+            for (int i = start; i < richTextBoxEditor.Text.Length; )
+            {
+                char ch = richTextBoxEditor.Text[i];
+                nextSpace = ++i;
+                if (char.IsWhiteSpace(ch))
+                {              
+                    break;
+                }
+               
+            }
+            if (previousSpace >= nextSpace)
+            {
+                guessWord = "";
+                WriteLine("Space here.");
+            }
+            else
+            {
+                int totalchar = nextSpace - previousSpace;
+                guessWord = richTextBoxEditor.Text.Substring(previousSpace, totalchar);
+            }
+            toolStripStatusCurrentWord.Text = guessWord;
+        }
     }
 }
