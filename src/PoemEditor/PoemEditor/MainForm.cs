@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using PoemEditor.Config;
-using PoemEditor.Lib.Model;
 using System;
 using System.Collections.Specialized;
 using System.Collections;
@@ -15,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using BanglaLib;
+using BanglaLib.Lib.Model;
 
 namespace PoemEditor
 {
@@ -25,7 +26,7 @@ namespace PoemEditor
         long sequence = 10000000;
         private readonly SynchronizationContext synchronizationContext = null;
         private DateTime previousTime = DateTime.Now;
-        List<LikeDictionary> bangla = new List<LikeDictionary>();
+        Dictionary<char, LikeDictionary> bangla = new Dictionary<char, LikeDictionary>();
         public MainEditor()
         {
             InitializeComponent();
@@ -55,79 +56,10 @@ namespace PoemEditor
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
-                string fullpath = Path.Combine(option.Location.DBFolder, "repo");
-                if (!Directory.Exists(fullpath))
-                {
-                    Directory.CreateDirectory(fullpath);
-                }
-                for (var i = 2432; i < 2560; i++)
-                {
-                    string fd = "repo_" + i + ".json";
-                    string fullpathFd = Path.Combine(option.Location.DBFolder, "repo", fd);
-                    LikeDictionary dictionary = new LikeDictionary();
-                    dictionary.Index = (long)i;
-                    dictionary.Start = (char)i;
-                    dictionary.WordList = new List<LikeWord>();
-                    File.WriteAllText(fullpathFd, JsonConvert.SerializeObject(dictionary));
-                }
-                string doctext = Path.Combine(option.Location.DBFolder, "Bangla.txt");
-                using (StreamReader reader = new StreamReader(doctext, Encoding.UTF8))
-                {
-                    while (true)
-                    {
-                        string line = reader.ReadLine();
-
-                        Debug.WriteLine(line);
-                        if (line == null)
-                        {
-                            break;
-                        }
-                        string[] words = line.Split(' ');
-                        foreach (var word in words)
-                        {
-                            if (!string.IsNullOrWhiteSpace(word))
-                            {
-                                char fchar = word[0];
-                                if (fchar < 2432 || fchar > 2560)
-                                {
-                                    continue;
-                                }
-                                else
-                                {
-                                    string fd = "repo_" + (int)fchar + ".json";
-                                    string fullpathFd = Path.Combine(option.Location.DBFolder, "repo", fd);
-
-                                    LikeDictionary dictionary = new LikeDictionary();
-                                    if (File.Exists(fullpathFd))
-                                    {
-                                        string content = File.ReadAllText(fullpathFd);
-                                        dictionary = JsonConvert.DeserializeObject<LikeDictionary>(content);
-                                    }
-                                    else
-                                    {
-                                        dictionary.Index = (long)fchar;
-                                        dictionary.Start = fchar;
-                                        dictionary.WordList = new List<LikeWord>();
-                                    }
-                                    if (dictionary.WordList.Where((x) => x.Word == word).Any() == false)
-                                    {
-                                        dictionary.WordList.Add(new LikeWord()
-                                        {
-                                            ID = sequence++,
-                                            POS = "to",
-                                            Source = "init",
-                                            Word = word,
-                                            On = DateTime.Now
-
-                                        });
-                                    }
-                                    string json = JsonConvert.SerializeObject(dictionary, Formatting.Indented);
-                                    File.WriteAllText(fullpathFd, json);
-                                }
-                            }
-                        }
-                    }
-                }
+                WordBreaker breaker = new WordBreaker(option.Location.DBFolder);
+                string wordFile = Path.Combine(option.Location.DBFolder, "Bangla.txt");
+                breaker.BreakFile(wordFile);
+                WriteLine("Completed word breaking process.");
             }
             catch (Exception ex)
             {
@@ -150,6 +82,18 @@ namespace PoemEditor
 
         private void RichTextBoxEditor_KeyUp(object sender, KeyEventArgs e)
         {
+            if(e.KeyCode == Keys.F4)
+            {
+                string word = toolStripStatusCurrentWord.Text;
+                if (!bangla.Any())
+                {
+                    WordBreaker breaker = new WordBreaker(option.Location.DBFolder);
+                    bangla = breaker.ReadWordFromRepository();
+                }
+                Suggest(word);
+                return;
+            }
+
             var posInLine = richTextBoxEditor.SelectionStart - richTextBoxEditor.GetFirstCharIndexOfCurrentLine();
             toolStripStatusCursorPosition.Text = "" + posInLine;
             string guessWord = richTextBoxEditor.Text;
@@ -187,47 +131,33 @@ namespace PoemEditor
             }
             guessWord = guessWord.Trim();
             toolStripStatusCurrentWord.Text = guessWord;
-            var k = SuggestWord(guessWord);
-            k.Wait(1000);
+            textBoxTheWord.Text = guessWord;
+                      
         }
-
-        private async Task SuggestWord(string word)
+        private void Suggest(string guessWord)
         {
-            await Task.Run(() =>
+            var suggestion = StartsWith(guessWord);
+
+            this.UIThread(() =>
             {
-                UpdateUI(word);
+                textBoxTheWord.Text = guessWord;
             });
-        }
-        public void UpdateUI(string word)
-        {
-            if (string.IsNullOrEmpty(word)) return;
-            var timeNow = DateTime.Now;
-
-            if ((DateTime.Now - previousTime).Milliseconds <= 50) return;
-
-            synchronizationContext.Post(new SendOrPostCallback(o =>
+            this.UIThread(() =>
             {
-                Text = @"Word " + word;
-                if (!bangla.Any())
-                {
-                    ReadDictionary();
-                }
-                var suggestion = StartsWith(word);
-                listBoxSuggestion.Items.Clear();
-                listBoxSuggestion.Items.AddRange(suggestion.Select(x => x.Word).Take(100).ToArray());
-                textBoxTheWord.Text = word;
                 comboBoxTheWord.Items.Clear();
                 comboBoxTheWord.Items.AddRange(suggestion.Select(x => x.Word).Take(20).ToArray());
-
-            }), word);
-
-            previousTime = timeNow;
+            });
+            this.UIThread(() => {
+                listBoxSuggestion.Items.Clear();
+                listBoxSuggestion.Items.AddRange(suggestion.Select(x => x.Word).Take(100).ToArray());
+            });
         }
+
         private List<LikeWord> StartsWith(string word)
         {
             List<LikeWord> likes = new List<LikeWord>();
             char firstChar = word[0];
-            var dic = bangla.Where(x => x.Start == firstChar).FirstOrDefault();
+            var dic = bangla[firstChar];
             if (dic == null)
             {
                 likes.Add(
@@ -246,26 +176,6 @@ namespace PoemEditor
             }
             return likes;
         }
-        private void ReadDictionary()
-        {
-
-            try
-            {
-                //bangla.Clear();
-                //Cursor.Current = Cursors.WaitCursor;
-                string fullpath = Path.Combine(option.Location.DBFolder, "repo");
-                DirectoryInfo dr = new DirectoryInfo(fullpath);
-                foreach (var file in dr.GetFiles("*.json"))
-                {
-                    var content = File.ReadAllText(file.FullName);
-                    LikeDictionary dictionary = JsonConvert.DeserializeObject<LikeDictionary>(content);
-                    bangla.Add(dictionary);
-                }
-            }
-            catch (Exception cx)
-            {
-
-            }
-        }
+    
     }
 }
