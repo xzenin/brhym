@@ -29,6 +29,11 @@
         private void InitializeComponent()
         {
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusCursorPosition = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusCurrentWord = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,11 +63,7 @@
             this.Console = new System.Windows.Forms.TabPage();
             this.textBoxConsole = new System.Windows.Forms.TextBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusCursorPosition = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusCurrentWord = new System.Windows.Forms.ToolStripStatusLabel();
+            this.crawlWebToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelLeft.SuspendLayout();
@@ -87,6 +88,36 @@
             this.statusStrip1.Size = new System.Drawing.Size(800, 22);
             this.statusStrip1.TabIndex = 0;
             this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(91, 17);
+            this.toolStripStatusLabel1.Text = "Cursor Position:";
+            // 
+            // toolStripStatusCursorPosition
+            // 
+            this.toolStripStatusCursorPosition.Name = "toolStripStatusCursorPosition";
+            this.toolStripStatusCursorPosition.Size = new System.Drawing.Size(13, 17);
+            this.toolStripStatusCursorPosition.Text = "0";
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(10, 17);
+            this.toolStripStatusLabel2.Text = "|";
+            // 
+            // toolStripStatusLabel3
+            // 
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(82, 17);
+            this.toolStripStatusLabel3.Text = "Current Word:";
+            // 
+            // toolStripStatusCurrentWord
+            // 
+            this.toolStripStatusCurrentWord.Name = "toolStripStatusCurrentWord";
+            this.toolStripStatusCurrentWord.Size = new System.Drawing.Size(10, 17);
+            this.toolStripStatusCurrentWord.Text = ".";
             // 
             // menuStrip1
             // 
@@ -171,7 +202,8 @@
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.readWordsToolStripMenuItem});
+            this.readWordsToolStripMenuItem,
+            this.crawlWebToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "&Tools";
@@ -179,7 +211,7 @@
             // readWordsToolStripMenuItem
             // 
             this.readWordsToolStripMenuItem.Name = "readWordsToolStripMenuItem";
-            this.readWordsToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.readWordsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.readWordsToolStripMenuItem.Text = "&Read Words";
             this.readWordsToolStripMenuItem.Click += new System.EventHandler(this.ReadWordsToolStripMenuItem_Click);
             // 
@@ -338,35 +370,12 @@
             this.splitter1.TabIndex = 4;
             this.splitter1.TabStop = false;
             // 
-            // toolStripStatusLabel1
+            // crawlWebToolStripMenuItem
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(91, 17);
-            this.toolStripStatusLabel1.Text = "Cursor Position:";
-            // 
-            // toolStripStatusCursorPosition
-            // 
-            this.toolStripStatusCursorPosition.Name = "toolStripStatusCursorPosition";
-            this.toolStripStatusCursorPosition.Size = new System.Drawing.Size(13, 17);
-            this.toolStripStatusCursorPosition.Text = "0";
-            // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(10, 17);
-            this.toolStripStatusLabel2.Text = "|";
-            // 
-            // toolStripStatusLabel3
-            // 
-            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(82, 17);
-            this.toolStripStatusLabel3.Text = "Current Word:";
-            // 
-            // toolStripStatusCurrentWord
-            // 
-            this.toolStripStatusCurrentWord.Name = "toolStripStatusCurrentWord";
-            this.toolStripStatusCurrentWord.Size = new System.Drawing.Size(10, 17);
-            this.toolStripStatusCurrentWord.Text = ".";
+            this.crawlWebToolStripMenuItem.Name = "crawlWebToolStripMenuItem";
+            this.crawlWebToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.crawlWebToolStripMenuItem.Text = "&Crawl Web";
+            this.crawlWebToolStripMenuItem.Click += new System.EventHandler(this.CrawlWebToolStripMenuItem_Click);
             // 
             // MainEditor
             // 
@@ -437,6 +446,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusCurrentWord;
+        private System.Windows.Forms.ToolStripMenuItem crawlWebToolStripMenuItem;
     }
 }
 

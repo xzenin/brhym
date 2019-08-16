@@ -21,23 +21,34 @@ namespace BanglaLib
         int batchCount = 0;
         public object lck = new object();
         Dictionary<char, LikeDictionary> likeDictionaries;
+        ConcurrentDictionary<string, LikeWord> newWordDiscovery = new ConcurrentDictionary<string, LikeWord>();
         public int FileCount { get => fileCount; set => fileCount = value; }
+        public ConcurrentDictionary<string, LikeWord> NewWordDiscovery { get => newWordDiscovery; set => newWordDiscovery = value; }
+
         public WordBreaker(string basePath)
         {
             repository = new FileRepository(basePath);
         }
-
+        public bool IsBangla(char ch) {
+            return ch >= wordLowerBound && ch < wordHigherBound;
+        }
+        //must be trimmed
+        public bool IsBangla(string word)
+        {
+            var bangla = word.ToCharArray().Count(c => IsBangla(c));
+            return bangla == word.Length;
+        }
         public Dictionary<char, LikeDictionary> ReadWordFromRepository()
         {
-            Dictionary<char, LikeDictionary> mlikes = new Dictionary<char, LikeDictionary>();
+            likeDictionaries = new Dictionary<char, LikeDictionary>();
             var nextDirectory = repository.EnsureDirectoryExist("repo");
             DirectoryInfo dr = new DirectoryInfo(nextDirectory.RootDirectory);
             foreach (var file in dr.GetFiles("*.json"))
             {
                 var dks = nextDirectory.Deserialize<LikeDictionary>(file.FullName);
-                mlikes[dks.Start] = dks;
+                likeDictionaries[dks.Start] = dks;
             }
-            return mlikes;
+            return likeDictionaries;
         }
 
         public int BreakFile(string fileName)
@@ -159,7 +170,7 @@ namespace BanglaLib
                 if (!string.IsNullOrWhiteSpace(word))
                 {
                     char fchar = word[0];
-                    if (fchar < wordLowerBound || fchar > wordHigherBound)
+                    if ( !IsBangla( fchar))
                     {
                         return 0;
                     }
@@ -174,6 +185,10 @@ namespace BanglaLib
                             On = DateTime.Now
 
                         };
+                        if(!NewWordDiscovery.ContainsKey(word))
+                        {
+                            NewWordDiscovery[word] = w;
+                        }
                         lock (lck)
                         {
                             LikeDictionary dictionary = likeDictionaries[fchar];

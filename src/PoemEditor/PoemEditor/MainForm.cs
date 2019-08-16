@@ -176,6 +176,11 @@ namespace PoemEditor
             }
             return likes;
         }
-    
+
+        private void CrawlWebToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            WebCrawler web = new WebCrawler(option);
+            web.ShowDialog();
+        }
     }
 }
