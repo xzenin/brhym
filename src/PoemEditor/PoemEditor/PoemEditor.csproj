@@ -12,6 +12,21 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,6 +46,12 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>030.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HtmlAgilityPack, Version=1.11.12.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
@@ -52,10 +73,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Config\Reader\ApplicationOption.cs" />
     <Compile Include="Config\DocumentExtn.cs" />
     <Compile Include="Config\IJSDocument.cs" />
     <Compile Include="Config\JSDocument.cs" />
+    <Compile Include="Confirm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Confirm.Designer.cs">
+      <DependentUpon>Confirm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -65,12 +98,24 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UIUpdateExtn.cs" />
+    <Compile Include="UpdateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UpdateForm.Designer.cs">
+      <DependentUpon>UpdateForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="WebCrawler.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="WebCrawler.Designer.cs">
       <DependentUpon>WebCrawler.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Confirm.resx">
+      <DependentUpon>Confirm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -82,7 +127,11 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="UpdateForm.resx">
+      <DependentUpon>UpdateForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="WebCrawler.resx">
       <DependentUpon>WebCrawler.cs</DependentUpon>
     </EmbeddedResource>
@@ -106,7 +155,214 @@
     <Folder Include="db\repo\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="030.ico" />
     <Content Include="db\Bangla.txt" />
+    <Content Include="db\ICO\001.ico" />
+    <Content Include="db\ICO\002.ico" />
+    <Content Include="db\ICO\003.ico" />
+    <Content Include="db\ICO\004.ico" />
+    <Content Include="db\ICO\005.ico" />
+    <Content Include="db\ICO\006.ico" />
+    <Content Include="db\ICO\007.ico" />
+    <Content Include="db\ICO\008.ico" />
+    <Content Include="db\ICO\009.ico" />
+    <Content Include="db\ICO\010.ico" />
+    <Content Include="db\ICO\011.ico" />
+    <Content Include="db\ICO\012.ico" />
+    <Content Include="db\ICO\013.ico" />
+    <Content Include="db\ICO\014.ico" />
+    <Content Include="db\ICO\015.ico" />
+    <Content Include="db\ICO\016.ico" />
+    <Content Include="db\ICO\017.ico" />
+    <Content Include="db\ICO\018.ico" />
+    <Content Include="db\ICO\019.ico" />
+    <Content Include="db\ICO\020.ico" />
+    <Content Include="db\ICO\021.ico" />
+    <Content Include="db\ICO\022.ico" />
+    <Content Include="db\ICO\023.ico" />
+    <Content Include="db\ICO\024.ico" />
+    <Content Include="db\ICO\025.ico" />
+    <Content Include="db\ICO\026.ico" />
+    <Content Include="db\ICO\027.ico" />
+    <Content Include="db\ICO\028.ico" />
+    <Content Include="db\ICO\029.ico" />
+    <Content Include="db\ICO\030.ico" />
+    <Content Include="db\ICO\031.ico" />
+    <Content Include="db\ICO\032.ico" />
+    <Content Include="db\ICO\033.ico" />
+    <Content Include="db\ICO\034.ico" />
+    <Content Include="db\ICO\035.ico" />
+    <Content Include="db\ICO\036.ico" />
+    <Content Include="db\ICO\037.ico" />
+    <Content Include="db\ICO\038.ico" />
+    <Content Include="db\ICO\039.ico" />
+    <Content Include="db\ICO\040.ico" />
+    <Content Include="db\ICO\041.ico" />
+    <Content Include="db\ICO\042.ico" />
+    <None Include="Resources\0821.png" />
+    <None Include="Resources\0811.png" />
+    <None Include="Resources\0801.png" />
+    <None Include="Resources\0791.png" />
+    <None Include="Resources\0781.png" />
+    <None Include="Resources\0771.png" />
+    <None Include="Resources\0761.png" />
+    <None Include="Resources\0751.png" />
+    <None Include="Resources\0741.png" />
+    <None Include="Resources\0731.png" />
+    <None Include="Resources\0721.png" />
+    <None Include="Resources\0711.png" />
+    <None Include="Resources\0701.png" />
+    <None Include="Resources\0691.png" />
+    <None Include="Resources\0681.png" />
+    <None Include="Resources\0671.png" />
+    <None Include="Resources\0661.png" />
+    <None Include="Resources\0651.png" />
+    <None Include="Resources\0641.png" />
+    <None Include="Resources\0631.png" />
+    <None Include="Resources\0621.png" />
+    <None Include="Resources\0611.png" />
+    <None Include="Resources\0601.png" />
+    <None Include="Resources\0591.png" />
+    <None Include="Resources\0581.png" />
+    <None Include="Resources\0571.png" />
+    <None Include="Resources\0561.png" />
+    <None Include="Resources\0551.png" />
+    <None Include="Resources\0541.png" />
+    <None Include="Resources\0531.png" />
+    <None Include="Resources\0521.png" />
+    <None Include="Resources\0511.png" />
+    <None Include="Resources\0501.png" />
+    <None Include="Resources\0491.png" />
+    <None Include="Resources\0481.png" />
+    <None Include="Resources\0471.png" />
+    <None Include="Resources\0461.png" />
+    <None Include="Resources\0451.png" />
+    <None Include="Resources\0441.png" />
+    <None Include="Resources\0431.png" />
+    <None Include="Resources\0421.png" />
+    <None Include="Resources\0411.png" />
+    <None Include="Resources\0401.png" />
+    <None Include="Resources\0391.png" />
+    <None Include="Resources\0381.png" />
+    <None Include="Resources\0371.png" />
+    <None Include="Resources\0361.png" />
+    <None Include="Resources\0351.png" />
+    <None Include="Resources\0341.png" />
+    <None Include="Resources\0331.png" />
+    <None Include="Resources\0321.png" />
+    <None Include="Resources\0311.png" />
+    <None Include="Resources\0301.png" />
+    <None Include="Resources\0291.png" />
+    <None Include="Resources\0281.png" />
+    <None Include="Resources\0271.png" />
+    <None Include="Resources\0261.png" />
+    <None Include="Resources\0251.png" />
+    <None Include="Resources\0241.png" />
+    <None Include="Resources\0231.png" />
+    <None Include="Resources\0221.png" />
+    <None Include="Resources\0211.png" />
+    <None Include="Resources\0201.png" />
+    <None Include="Resources\0191.png" />
+    <None Include="Resources\0181.png" />
+    <None Include="Resources\0171.png" />
+    <None Include="Resources\0161.png" />
+    <None Include="Resources\0151.png" />
+    <None Include="Resources\0141.png" />
+    <None Include="Resources\0131.png" />
+    <None Include="Resources\0121.png" />
+    <None Include="Resources\0111.png" />
+    <None Include="Resources\0101.png" />
+    <None Include="Resources\0091.png" />
+    <None Include="Resources\0081.png" />
+    <None Include="Resources\0071.png" />
+    <None Include="Resources\0061.png" />
+    <None Include="Resources\0051.png" />
+    <None Include="Resources\0041.png" />
+    <None Include="Resources\0031.png" />
+    <None Include="Resources\0021.png" />
+    <None Include="Resources\0011.png" />
+    <None Include="Resources\082.png" />
+    <None Include="Resources\081.png" />
+    <None Include="Resources\080.png" />
+    <None Include="Resources\079.png" />
+    <None Include="Resources\078.png" />
+    <None Include="Resources\077.png" />
+    <None Include="Resources\076.png" />
+    <None Include="Resources\075.png" />
+    <None Include="Resources\074.png" />
+    <None Include="Resources\073.png" />
+    <None Include="Resources\072.png" />
+    <None Include="Resources\071.png" />
+    <None Include="Resources\070.png" />
+    <None Include="Resources\069.png" />
+    <None Include="Resources\068.png" />
+    <None Include="Resources\067.png" />
+    <None Include="Resources\066.png" />
+    <None Include="Resources\065.png" />
+    <None Include="Resources\064.png" />
+    <None Include="Resources\063.png" />
+    <None Include="Resources\062.png" />
+    <None Include="Resources\061.png" />
+    <None Include="Resources\060.png" />
+    <None Include="Resources\059.png" />
+    <None Include="Resources\058.png" />
+    <None Include="Resources\057.png" />
+    <None Include="Resources\056.png" />
+    <None Include="Resources\055.png" />
+    <None Include="Resources\054.png" />
+    <None Include="Resources\053.png" />
+    <None Include="Resources\052.png" />
+    <None Include="Resources\051.png" />
+    <None Include="Resources\050.png" />
+    <None Include="Resources\049.png" />
+    <None Include="Resources\048.png" />
+    <None Include="Resources\047.png" />
+    <None Include="Resources\046.png" />
+    <None Include="Resources\045.png" />
+    <None Include="Resources\044.png" />
+    <None Include="Resources\043.png" />
+    <None Include="Resources\042.png" />
+    <None Include="Resources\041.png" />
+    <None Include="Resources\040.png" />
+    <None Include="Resources\039.png" />
+    <None Include="Resources\038.png" />
+    <None Include="Resources\037.png" />
+    <None Include="Resources\036.png" />
+    <None Include="Resources\035.png" />
+    <None Include="Resources\034.png" />
+    <None Include="Resources\033.png" />
+    <None Include="Resources\032.png" />
+    <None Include="Resources\031.png" />
+    <None Include="Resources\030.png" />
+    <None Include="Resources\029.png" />
+    <None Include="Resources\028.png" />
+    <None Include="Resources\027.png" />
+    <None Include="Resources\026.png" />
+    <None Include="Resources\025.png" />
+    <None Include="Resources\024.png" />
+    <None Include="Resources\023.png" />
+    <None Include="Resources\022.png" />
+    <None Include="Resources\021.png" />
+    <None Include="Resources\020.png" />
+    <None Include="Resources\019.png" />
+    <None Include="Resources\018.png" />
+    <None Include="Resources\017.png" />
+    <None Include="Resources\016.png" />
+    <None Include="Resources\015.png" />
+    <None Include="Resources\014.png" />
+    <None Include="Resources\013.png" />
+    <None Include="Resources\012.png" />
+    <None Include="Resources\011.png" />
+    <None Include="Resources\010.png" />
+    <None Include="Resources\009.png" />
+    <None Include="Resources\008.png" />
+    <None Include="Resources\007.png" />
+    <None Include="Resources\006.png" />
+    <None Include="Resources\005.png" />
+    <None Include="Resources\004.png" />
+    <None Include="Resources\003.png" />
+    <None Include="Resources\002.png" />
+    <None Include="Resources\001.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BanglaLib\BanglaLib.csproj">
@@ -114,12 +370,25 @@
       <Name>BanglaLib</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(ProjectDir)\db" "$(TargetDir)\_db\" /S /Y</PostBuildEvent>
+    <PostBuildEvent>XCOPY "$(ProjectDir)\db" "$(TargetDir)\_db\" /S /Y
+</PostBuildEvent>
   </PropertyGroup>
 </Project>

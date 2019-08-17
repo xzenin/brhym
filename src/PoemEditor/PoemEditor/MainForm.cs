@@ -27,6 +27,10 @@ namespace PoemEditor
         private readonly SynchronizationContext synchronizationContext = null;
         private DateTime previousTime = DateTime.Now;
         Dictionary<char, LikeDictionary> bangla = new Dictionary<char, LikeDictionary>();
+
+        bool dirty = false;
+        string currentFileInOpening;
+
         public MainEditor()
         {
             InitializeComponent();
@@ -82,7 +86,7 @@ namespace PoemEditor
 
         private void RichTextBoxEditor_KeyUp(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.F4)
+            if (e.KeyCode == Keys.F4)
             {
                 string word = toolStripStatusCurrentWord.Text;
                 if (!bangla.Any())
@@ -132,7 +136,7 @@ namespace PoemEditor
             guessWord = guessWord.Trim();
             toolStripStatusCurrentWord.Text = guessWord;
             textBoxTheWord.Text = guessWord;
-                      
+          
         }
         private void Suggest(string guessWord)
         {
@@ -147,7 +151,8 @@ namespace PoemEditor
                 comboBoxTheWord.Items.Clear();
                 comboBoxTheWord.Items.AddRange(suggestion.Select(x => x.Word).Take(20).ToArray());
             });
-            this.UIThread(() => {
+            this.UIThread(() =>
+            {
                 listBoxSuggestion.Items.Clear();
                 listBoxSuggestion.Items.AddRange(suggestion.Select(x => x.Word).Take(100).ToArray());
             });
@@ -181,6 +186,192 @@ namespace PoemEditor
         {
             WebCrawler web = new WebCrawler(option);
             web.ShowDialog();
+        }
+
+        private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dirty)
+            {
+
+            }
+            else
+            {
+                this.Dispose();
+            }
+        }
+
+        private void NewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+        public void Save()
+        {
+            SaveAs(currentFileInOpening);
+            dirty = false;
+        }
+        public void SaveAs(string fileName)
+        {
+            richTextBoxEditor.SaveFile(fileName, RichTextBoxStreamType.RichText);
+            currentFileInOpening = fileName;
+            dirty = false;
+        }
+        public void ShowStatus(string line)
+        {
+            toolStripStatusLabelStatus.Text = line;
+        }
+
+        private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(currentFileInOpening))
+            {
+                SaveAsToolStripMenuItem_Click(sender, e);
+            }
+            else
+            {
+                Save();
+             
+            }
+        }
+
+        private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ok = saveFileDialog1.ShowDialog();
+            if (ok == DialogResult.OK)
+            {
+                string filename = saveFileDialog1.FileName;
+                SaveAs(filename);
+                
+            }
+        }
+
+        private void OptionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ok = openFileDialog1.ShowDialog();
+            if (ok == DialogResult.OK)
+            {
+                string file = openFileDialog1.FileName;
+                var newfile = Open(file);
+                if (string.IsNullOrEmpty(newfile))
+                {
+                    currentFileInOpening = newfile;
+                   
+                }
+            }
+        }
+        private string Open(string file)
+        {
+            try
+            {
+                richTextBoxEditor.LoadFile(file, RichTextBoxStreamType.RichText);
+                dirty = false;
+                return file;
+            }
+            catch (Exception cx)
+            {
+                return null;
+            }
+        }
+        private void Close()
+        {
+            if (dirty)
+            {
+                Confirm confirm = new Confirm();
+
+                confirm.Message = "The file has been changed. Do you want to save it ?";
+
+                var yn = confirm.ShowDialog();
+                if (yn == DialogResult.OK)
+                {
+                    if (!string.IsNullOrEmpty(currentFileInOpening))
+                    {
+                        Save();                     
+                        currentFileInOpening = null;
+                        richTextBoxEditor.Text = "";
+                    }
+                    else
+                    {
+                        var filer = saveFileDialog1.ShowDialog();
+                        if (filer == DialogResult.OK)
+                        {
+                            string file = saveFileDialog1.FileName;
+                            SaveAs(file);                           
+                            currentFileInOpening = null;
+                            richTextBoxEditor.Text = "";
+                        }
+                    }
+                }
+            }
+            else
+            {
+                dirty = false;
+                currentFileInOpening = null;
+                richTextBoxEditor.Text = "";
+            }
+        }
+
+        private void RichTextBoxEditor_TextChanged(object sender, EventArgs e)
+        {
+            if(!string.IsNullOrEmpty( richTextBoxEditor.Text ))
+            {
+                dirty = true;
+            }
+           
+        }
+
+        private void MainEditor_DragDrop(object sender, DragEventArgs e)
+        {
+            try
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                var firstFile = files.FirstOrDefault();
+                if (!string.IsNullOrEmpty(firstFile)) {
+                    Open(firstFile);
+                }
+            }
+            catch (Exception xc) {
+            }
+        }
+
+        private void ClearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            richTextBoxEditor.Text = "";
+        }
+
+        private void AboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutBox about = new AboutBox();
+            about.ShowDialog();
+        }
+
+        private void UpdateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UpdateForm update = new UpdateForm();
+            update.Show();
+        }
+
+        private void MainEditor_DragLeave(object sender, EventArgs e)
+        {
+
+        }
+
+        private void MainEditor_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
+        }
+
+        private void MainEditor_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
         }
     }
 }
