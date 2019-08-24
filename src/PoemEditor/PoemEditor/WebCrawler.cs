@@ -1,4 +1,5 @@
-﻿using BanglaLib.Spider;
+﻿using BanglaLib.Lib.Model;
+using BanglaLib.Spider;
 using PoemEditor.Config;
 using System;
 using System.Collections.Generic;
@@ -30,15 +31,12 @@ namespace PoemEditor
         private void ButtonCancel_Click(object sender, EventArgs e)
         {
             toolStripProgressBarCount.Style = ProgressBarStyle.Blocks;
-            spider.Stop();
-          
-            //NewWords = spider.Breaker.NewWordDiscovery.Keys.ToList();
-            foreach(var w in spider.Words.Keys)
+            backgroundWorker1.CancelAsync();
+            if (spider != null)
             {
-                WriteLine(w);
+                spider.Stop();
             }
-            //this.Dispose();
-            //this.Hide();
+         
         }
 
         private void ButtonOK_Click(object sender, EventArgs e)
@@ -47,16 +45,48 @@ namespace PoemEditor
             {
                 return;
             }
+            backgroundWorker1.DoWork += new DoWorkEventHandler((s1, e1) => {
+                RunJob(textBoxUrl.Text);
+            });
+            backgroundWorker1.RunWorkerAsync();
+        }
+        private void RunJob(string url) { 
+
             update = new Timer();
             update.Interval = 5000;
-            toolStripProgressBarCount.Alignment = ToolStripItemAlignment.Right;
-            toolStripProgressBarCount.Style = ProgressBarStyle.Marquee;
-            spider = new Crawler(option.Location.DBFolder);
-            spider.OnWrite += new Crawler.WriteLogger((k, line) => {
-                WriteLine(line);
+            //toolStripProgressBarCount.Alignment = ToolStripItemAlignment.Right;
+            //toolStripProgressBarCount.Style = ProgressBarStyle.Marquee;
+            spider = new Crawler(option.Location.DocumentFolder);
+            spider.OnWrite += new Crawler.WriteLogger((k, arg) =>
+            {
+                Task.Run(() =>
+                {
+                    switch (arg.Status)
+                    {
+                        case ExecutionSatus.NewWord:
+                            NewWord(arg.Line);
+                            break;
+                        case ExecutionSatus.NewJobEnqued:
+                            AddNewJob(arg.Line);
+                            break;
+                        case ExecutionSatus.NewUrlAdded:
+                            AddNewUrl(arg.Line);
+                            break;
+                        case ExecutionSatus.Error:
+                            DebugMessage(arg.Line);
+                            break;
+                        default:
+                            DebugMessage(arg.Line);
+                            break;
+                    }
+
+                });
             });
-            spider.Start(textBoxUrl.Text);
+            spider.Start(url);
+
+            /*
             update.Tick += new EventHandler((c, r) => {
+                
                 toolStripStatusLabelCount.Text = "" + spider.WorkInProgress;
                 NewWords.Clear();
                 NewWords.AddRange(spider.Words.Keys);
@@ -67,15 +97,47 @@ namespace PoemEditor
                 }
                 WriteLine("==========================");
             });
-          
+            */
         }
 
-        public void WriteLine(string line)
+        public void NewWord(string line)
         {
-            this.UIThread(() =>
+            textBoxConsole.UIThread(() =>
             {
                 textBoxConsole.Text = Environment.NewLine + line + textBoxConsole.Text;
             });
+        }
+        public void DebugMessage(string line)
+        {
+            textBoxDebug.UIThread(() =>
+            {
+                textBoxDebug.Text = Environment.NewLine + line + textBoxDebug.Text;
+            });
+        }
+        public void AddNewUrl(string line)
+        {
+            listViewAll.UIThread(() =>
+            {
+                listViewAll.Items.Add(line);
+            });
+        }
+        public void AddNewJob(string line)
+        {
+            listViewRunning.UIThread(() =>
+            {
+                listViewRunning.Items.Add(line);
+            });
+        }
+        public void UpdateProgressBar(string  value)
+        {
+            if (textBoxConsole.InvokeRequired)
+            {
+                textBoxConsole.Invoke(new MethodInvoker(() => textBoxConsole.Text = value));
+            }
+            else
+            {
+                textBoxConsole.Text = value;
+            }
         }
     }
 }

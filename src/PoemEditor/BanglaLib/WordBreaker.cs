@@ -1,4 +1,5 @@
 ﻿using BanglaLib.Lib.Model;
+using BanglaLib.Spider;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
@@ -43,33 +44,50 @@ namespace BanglaLib
             likeDictionaries = new Dictionary<char, LikeDictionary>();
             var nextDirectory = repository.EnsureDirectoryExist("repo");
             DirectoryInfo dr = new DirectoryInfo(nextDirectory.RootDirectory);
-            foreach (var file in dr.GetFiles("*.json"))
+            if (dr.GetFiles("*.json").Length > 1)
             {
-                var dks = nextDirectory.Deserialize<LikeDictionary>(file.FullName);
-                likeDictionaries[dks.Start] = dks;
+                foreach (var file in dr.GetFiles("*.json"))
+                {
+                    var dks = nextDirectory.Deserialize<LikeDictionary>(file.FullName);
+                    likeDictionaries[dks.Start] = dks;
+                }
+            }else
+            {
+               return InitializeFolder();
             }
             return likeDictionaries;
         }
-
+        public Dictionary<char, LikeDictionary> InitializeFolder()
+        {
+            likeDictionaries = new Dictionary<char, LikeDictionary>();
+            var nextDirectory = repository.EnsureDirectoryExist("repo");
+            for (var i = wordLowerBound; i < wordHigherBound; i++)
+            {
+                string fd = "repo_" + i + ".json";
+                LikeDictionary dictionary = new LikeDictionary();
+                dictionary.Index = (long)i;
+                dictionary.Start = (char)i;
+                dictionary.WordList = new List<LikeWord>();
+                nextDirectory.Serialize(fd, dictionary);
+                likeDictionaries[dictionary.Start] = dictionary;
+            }
+            return likeDictionaries;
+        }
+        public void WriteBack()
+        {
+            var nextDirectory = repository.EnsureDirectoryExist("repo");
+            foreach (var kv in likeDictionaries)
+            {
+                string fd = "repo_" + kv.Value.Index + ".json";
+                nextDirectory.Serialize(fd, kv.Value);
+            }
+        }
         public int BreakFile(string fileName)
         {
             FileCount = 0;
           
             try
             {
-                likeDictionaries = new Dictionary<char, LikeDictionary>();
-                var nextDirectory = repository.EnsureDirectoryExist("repo");
-                for (var i = wordLowerBound; i < wordHigherBound; i++)
-                {
-                    string fd = "repo_" + i + ".json";
-                    LikeDictionary dictionary = new LikeDictionary();
-                    dictionary.Index = (long)i;
-                    dictionary.Start = (char)i;
-                    dictionary.WordList = new List<LikeWord>();
-                    nextDirectory.Serialize(fd, dictionary);
-                    likeDictionaries[dictionary.Start] = dictionary;
-                }
-
                 using (StreamReader reader = new StreamReader(fileName, Encoding.UTF8))
                 {
                     bool finished = false;
@@ -98,12 +116,7 @@ namespace BanglaLib
                         }
                     }
                 }
-
-                foreach (var kv in likeDictionaries)
-                {
-                    string fd = "repo_" + kv.Value.Index + ".json";
-                    nextDirectory.Serialize(fd, kv.Value);
-                }
+               
             }
             catch (Exception ex)
             {
@@ -115,7 +128,6 @@ namespace BanglaLib
             }
             return FileCount;
         }
-
 
         public bool ProcessBatch(string[] documentIds)
         {
@@ -196,6 +208,7 @@ namespace BanglaLib
                             {
                                 dictionary.WordList.Add(w);
                             }
+                            likeDictionaries[fchar] = dictionary;
                         }
                     }
                 }

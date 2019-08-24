@@ -45,8 +45,8 @@ namespace PoemEditor
         private void LoadConfig()
         {
             ApplicationOption app = new ApplicationOption();
-            //var opt = app.CreateOption(defaultFile);
-            //app.WriteOption( defaultFile, opt);
+            var opt = app.CreateOption(defaultFile);
+           app.WriteOption( defaultFile, opt);
             option = app.ReadOption(option.FileName);
         }
         /// <summary>
@@ -62,7 +62,9 @@ namespace PoemEditor
                 Cursor.Current = Cursors.WaitCursor;
                 WordBreaker breaker = new WordBreaker(option.Location.DBFolder);
                 string wordFile = Path.Combine(option.Location.DBFolder, "Bangla.txt");
+                breaker.InitializeFolder();
                 breaker.BreakFile(wordFile);
+                breaker.WriteBack();
                 WriteLine("Completed word breaking process.");
             }
             catch (Exception ex)
