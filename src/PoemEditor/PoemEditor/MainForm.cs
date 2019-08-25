@@ -16,6 +16,7 @@ using System.Windows.Forms;
 using System.Threading;
 using BanglaLib;
 using BanglaLib.Lib.Model;
+using PoemEditor.Rhymer;
 
 namespace PoemEditor
 {
@@ -374,6 +375,12 @@ namespace PoemEditor
         private void MainEditor_DragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
+        }
+
+        private void ExecutePythonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NextWord next = new NextWord();
+            next.ShowDialog();
         }
     }
 }

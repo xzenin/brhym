@@ -9,6 +9,35 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BanglaLib", "BanglaLib\Bang
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "EditorSetup", "EditorSetup\EditorSetup.vdproj", "{17268BC0-E3CB-4A13-9A84-BE0F7D7905CA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoemCLI", "PoemCLI\PoemCLI.csproj", "{ED055A80-19C0-4517-829B-B444B325D43A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PYTHON", "PYTHON", "{D9844C19-89C3-4B7E-A139-7432FBFA15A8}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "poetry", "..\..\poetry\", "{85BE098E-2AF1-402E-AD48-F864ADCCABE0}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_51559"
+		Debug.AspNetCompiler.PhysicalPath = "..\..\poetry\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_51559\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_51559"
+		Release.AspNetCompiler.PhysicalPath = "..\..\poetry\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_51559\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "51559"
+		SlnRelativePath = "..\..\poetry\"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WPF", "WPF", "{9C1550E9-9445-4A41-B981-A4A271ADAAB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordPicker", "WordPicker\WordPicker.csproj", "{1FAE231B-618A-4AB1-9037-4EB868CF2C97}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,9 +54,25 @@ Global
 		{4D346C45-C56E-43E9-A1B9-688FF7A28178}.Release|Any CPU.Build.0 = Release|Any CPU
 		{17268BC0-E3CB-4A13-9A84-BE0F7D7905CA}.Debug|Any CPU.ActiveCfg = Debug
 		{17268BC0-E3CB-4A13-9A84-BE0F7D7905CA}.Release|Any CPU.ActiveCfg = Release
+		{ED055A80-19C0-4517-829B-B444B325D43A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED055A80-19C0-4517-829B-B444B325D43A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED055A80-19C0-4517-829B-B444B325D43A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED055A80-19C0-4517-829B-B444B325D43A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85BE098E-2AF1-402E-AD48-F864ADCCABE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85BE098E-2AF1-402E-AD48-F864ADCCABE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85BE098E-2AF1-402E-AD48-F864ADCCABE0}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{85BE098E-2AF1-402E-AD48-F864ADCCABE0}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{1FAE231B-618A-4AB1-9037-4EB868CF2C97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FAE231B-618A-4AB1-9037-4EB868CF2C97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FAE231B-618A-4AB1-9037-4EB868CF2C97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FAE231B-618A-4AB1-9037-4EB868CF2C97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{85BE098E-2AF1-402E-AD48-F864ADCCABE0} = {D9844C19-89C3-4B7E-A139-7432FBFA15A8}
+		{1FAE231B-618A-4AB1-9037-4EB868CF2C97} = {9C1550E9-9445-4A41-B981-A4A271ADAAB8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D67560CE-0E30-4013-9890-4712B70C3407}

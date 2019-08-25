@@ -1,0 +1,150 @@
+﻿<Window x:Class="WordPicker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WordPicker"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+
+    <DockPanel LastChildFill="True">
+        <StackPanel DockPanel.Dock="Top">
+            <Menu x:Name="mainMenu" IsMainMenu="True">
+                <MenuItem Header="File">
+                    <MenuItem Header="New">
+
+                    </MenuItem>
+                    <MenuItem Header="Open">
+
+                    </MenuItem>
+                    <MenuItem Header="Close">
+
+                    </MenuItem>
+                    <MenuItem Header="Save">
+
+                    </MenuItem>
+                    <MenuItem Header="SaveAs">
+
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem Header="Options">
+
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem Header="Exit" Click="Window_Exit">
+
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Edit">Edit</MenuItem>
+                <MenuItem Header="Tool">
+                    <MenuItem Header="Collect Word" Click="CollectWord_Click">
+                        
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Help">
+                    <MenuItem Header="About">
+
+                    </MenuItem>
+                    <MenuItem Header="Update">
+
+                    </MenuItem>
+                </MenuItem>
+            </Menu>            
+            <ToolBarTray>
+                <ToolBar>
+                    <Button Command="New"  Content="New" />
+                    <Button Command="Delete" Content="Delete" />
+                    <Button Command="Refresh" Content="Refresh" />
+                </ToolBar>
+            </ToolBarTray>
+        </StackPanel>
+       
+        
+        <StatusBar DockPanel.Dock="Bottom">
+            <StackPanel Name="statusbar" Orientation="Horizontal">
+                <Label>Loaded:</Label>
+                <TextBox x:Name="txtStatus" Margin="2 5 0 0" Text="{Binding Status}"></TextBox>
+                <Label>|</Label>
+                <Label>Word:</Label>
+                <TextBox x:Name="txtWord" Margin="2 5 0 0" Width="200" Text="{Binding Word }"></TextBox>
+                <Label>|</Label>
+                <Label>Position:</Label>
+                <TextBox x:Name="txtSequence" Margin="2 5 0 0" Width="100" Text="{Binding Position }"></TextBox>
+                <Label>|</Label>
+                <Label>Progress:</Label>
+                <ProgressBar Value="50" Margin="2 5 0 0"></ProgressBar>
+            </StackPanel>
+        </StatusBar>
+        <Grid Name="workArea">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <DockPanel HorizontalAlignment="Stretch">
+                <RichTextBox x:Name="txtNotepad"  TextChanged="TxtNotepad_TextChanged" KeyUp="TxtNotepad_KeyUp">
+                    <FlowDocument>
+                        <Paragraph FontSize="36">Hello, world!</Paragraph>
+                        <Paragraph FontStyle="Italic" TextAlignment="Left" FontSize="14" Foreground="Gray">Thanks to the RichTextBox control, this FlowDocument is completely editable!</Paragraph>
+                    </FlowDocument>
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </DockPanel>
+
+            <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch" Background="#CCDDAA"/>
+            <TabControl Grid.Column="2">
+                <TabItem Header="General" Name="contextual">
+                    <DockPanel  HorizontalAlignment="Stretch">
+                        <GroupBox DockPanel.Dock="Top" Margin="0 0 0 10" BorderBrush="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}">
+                            <GroupBox.Header>
+                                <TextBlock FontWeight="Bold" Text="Contexual Words"></TextBlock>
+                            </GroupBox.Header>
+                            <StackPanel>
+                                <DockPanel FlowDirection="LeftToRight">
+                                    <Label Width="60">Word:</Label>
+                                    <TextBox x:Name="theWord">Word</TextBox>
+                                </DockPanel>
+                                <DockPanel FlowDirection="LeftToRight">
+                                    <Label Width="60">Suggest:</Label>
+                                    <ComboBox Name="pickWord">Word</ComboBox>
+                                </DockPanel>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox DockPanel.Dock="Top">
+                            <GroupBox.Header>
+                                <TextBlock FontWeight="Bold" Text="Suggested Words"></TextBlock>
+                            </GroupBox.Header>
+                            <StackPanel>
+                                <ListBox x:Name="listSuggestion">
+                                    <ListBoxItem>
+                                        One
+                                    </ListBoxItem>
+                                    <ListBoxItem>
+                                        Two
+                                    </ListBoxItem>
+                                </ListBox>
+                            </StackPanel>
+                        </GroupBox>
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="Console" Name="logBack">
+                    <TextBox x:Name="txtConsole">
+                        Content goes here
+                    </TextBox>
+                </TabItem>
+            </TabControl>
+
+        </Grid>
+
+    </DockPanel>
+
+</Window>

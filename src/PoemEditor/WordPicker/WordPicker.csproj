@@ -1,0 +1,329 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1FAE231B-618A-4AB1-9037-4EB868CF2C97}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>WordPicker</RootNamespace>
+    <AssemblyName>WordPicker</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="UIBoundDataUpdateExtn.cs" />
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Config\MainModel.cs" />
+    <Compile Include="Config\Reader\ApplicationOption.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="db\Bangla_words.doc" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="db\Bangla.txt" />
+    <Resource Include="db\ICO\001.ico" />
+    <Resource Include="db\ICO\002.ico" />
+    <Resource Include="db\ICO\003.ico" />
+    <Resource Include="db\ICO\004.ico" />
+    <Resource Include="db\ICO\005.ico" />
+    <Resource Include="db\ICO\006.ico" />
+    <Resource Include="db\ICO\007.ico" />
+    <Resource Include="db\ICO\008.ico" />
+    <Resource Include="db\ICO\009.ico" />
+    <Resource Include="db\ICO\010.ico" />
+    <Resource Include="db\ICO\011.ico" />
+    <Resource Include="db\ICO\012.ico" />
+    <Resource Include="db\ICO\013.ico" />
+    <Resource Include="db\ICO\014.ico" />
+    <Resource Include="db\ICO\015.ico" />
+    <Resource Include="db\ICO\016.ico" />
+    <Resource Include="db\ICO\017.ico" />
+    <Resource Include="db\ICO\018.ico" />
+    <Resource Include="db\ICO\019.ico" />
+    <Resource Include="db\ICO\020.ico" />
+    <Resource Include="db\ICO\021.ico" />
+    <Resource Include="db\ICO\022.ico" />
+    <Resource Include="db\ICO\023.ico" />
+    <Resource Include="db\ICO\024.ico" />
+    <Resource Include="db\ICO\025.ico" />
+    <Resource Include="db\ICO\026.ico" />
+    <Resource Include="db\ICO\027.ico" />
+    <Resource Include="db\ICO\028.ico" />
+    <Resource Include="db\ICO\029.ico" />
+    <Resource Include="db\ICO\030.ico" />
+    <Resource Include="db\ICO\031.ico" />
+    <Resource Include="db\ICO\032.ico" />
+    <Resource Include="db\ICO\033.ico" />
+    <Resource Include="db\ICO\034.ico" />
+    <Resource Include="db\ICO\035.ico" />
+    <Resource Include="db\ICO\036.ico" />
+    <Resource Include="db\ICO\037.ico" />
+    <Resource Include="db\ICO\038.ico" />
+    <Resource Include="db\ICO\039.ico" />
+    <Resource Include="db\ICO\040.ico" />
+    <Resource Include="db\ICO\041.ico" />
+    <Resource Include="db\ICO\042.ico" />
+    <Resource Include="Resources\0821.png" />
+    <Resource Include="Resources\082.png" />
+    <Resource Include="Resources\0811.png" />
+    <Resource Include="Resources\081.png" />
+    <Resource Include="Resources\0801.png" />
+    <Resource Include="Resources\080.png" />
+    <Resource Include="Resources\0791.png" />
+    <Resource Include="Resources\079.png" />
+    <Resource Include="Resources\0781.png" />
+    <Resource Include="Resources\078.png" />
+    <Resource Include="Resources\0771.png" />
+    <Resource Include="Resources\077.png" />
+    <Resource Include="Resources\0761.png" />
+    <Resource Include="Resources\076.png" />
+    <Resource Include="Resources\0751.png" />
+    <Resource Include="Resources\075.png" />
+    <Resource Include="Resources\0741.png" />
+    <Resource Include="Resources\074.png" />
+    <Resource Include="Resources\0731.png" />
+    <Resource Include="Resources\073.png" />
+    <Resource Include="Resources\0721.png" />
+    <Resource Include="Resources\072.png" />
+    <Resource Include="Resources\0711.png" />
+    <Resource Include="Resources\071.png" />
+    <Resource Include="Resources\0701.png" />
+    <Resource Include="Resources\070.png" />
+    <Resource Include="Resources\0691.png" />
+    <Resource Include="Resources\069.png" />
+    <Resource Include="Resources\0681.png" />
+    <Resource Include="Resources\068.png" />
+    <Resource Include="Resources\0671.png" />
+    <Resource Include="Resources\067.png" />
+    <Resource Include="Resources\0661.png" />
+    <Resource Include="Resources\066.png" />
+    <Resource Include="Resources\0651.png" />
+    <Resource Include="Resources\065.png" />
+    <Resource Include="Resources\0641.png" />
+    <Resource Include="Resources\064.png" />
+    <Resource Include="Resources\0631.png" />
+    <Resource Include="Resources\063.png" />
+    <Resource Include="Resources\0621.png" />
+    <Resource Include="Resources\062.png" />
+    <Resource Include="Resources\0611.png" />
+    <Resource Include="Resources\061.png" />
+    <Resource Include="Resources\0601.png" />
+    <Resource Include="Resources\060.png" />
+    <Resource Include="Resources\0591.png" />
+    <Resource Include="Resources\059.png" />
+    <Resource Include="Resources\0581.png" />
+    <Resource Include="Resources\058.png" />
+    <Resource Include="Resources\0571.png" />
+    <Resource Include="Resources\057.png" />
+    <Resource Include="Resources\0561.png" />
+    <Resource Include="Resources\056.png" />
+    <Resource Include="Resources\0551.png" />
+    <Resource Include="Resources\055.png" />
+    <Resource Include="Resources\0541.png" />
+    <Resource Include="Resources\054.png" />
+    <Resource Include="Resources\0531.png" />
+    <Resource Include="Resources\053.png" />
+    <Resource Include="Resources\0521.png" />
+    <Resource Include="Resources\052.png" />
+    <Resource Include="Resources\0511.png" />
+    <Resource Include="Resources\051.png" />
+    <Resource Include="Resources\0501.png" />
+    <Resource Include="Resources\050.png" />
+    <Resource Include="Resources\0491.png" />
+    <Resource Include="Resources\049.png" />
+    <Resource Include="Resources\0481.png" />
+    <Resource Include="Resources\048.png" />
+    <Resource Include="Resources\0471.png" />
+    <Resource Include="Resources\047.png" />
+    <Resource Include="Resources\0461.png" />
+    <Resource Include="Resources\046.png" />
+    <Resource Include="Resources\0451.png" />
+    <Resource Include="Resources\045.png" />
+    <Resource Include="Resources\0441.png" />
+    <Resource Include="Resources\044.png" />
+    <Resource Include="Resources\0431.png" />
+    <Resource Include="Resources\043.png" />
+    <Resource Include="Resources\0421.png" />
+    <Resource Include="Resources\042.png" />
+    <Resource Include="Resources\0411.png" />
+    <Resource Include="Resources\041.png" />
+    <Resource Include="Resources\0401.png" />
+    <Resource Include="Resources\040.png" />
+    <Resource Include="Resources\0391.png" />
+    <Resource Include="Resources\039.png" />
+    <Resource Include="Resources\0381.png" />
+    <Resource Include="Resources\038.png" />
+    <Resource Include="Resources\0371.png" />
+    <Resource Include="Resources\037.png" />
+    <Resource Include="Resources\0361.png" />
+    <Resource Include="Resources\036.png" />
+    <Resource Include="Resources\0351.png" />
+    <Resource Include="Resources\035.png" />
+    <Resource Include="Resources\0341.png" />
+    <Resource Include="Resources\034.png" />
+    <Resource Include="Resources\0331.png" />
+    <Resource Include="Resources\033.png" />
+    <Resource Include="Resources\0321.png" />
+    <Resource Include="Resources\032.png" />
+    <Resource Include="Resources\0311.png" />
+    <Resource Include="Resources\031.png" />
+    <Resource Include="Resources\0301.png" />
+    <Resource Include="Resources\030.png" />
+    <Resource Include="Resources\0291.png" />
+    <Resource Include="Resources\029.png" />
+    <Resource Include="Resources\0281.png" />
+    <Resource Include="Resources\028.png" />
+    <Resource Include="Resources\0271.png" />
+    <Resource Include="Resources\027.png" />
+    <Resource Include="Resources\0261.png" />
+    <Resource Include="Resources\026.png" />
+    <Resource Include="Resources\0251.png" />
+    <Resource Include="Resources\025.png" />
+    <Resource Include="Resources\0241.png" />
+    <Resource Include="Resources\024.png" />
+    <Resource Include="Resources\0231.png" />
+    <Resource Include="Resources\023.png" />
+    <Resource Include="Resources\0221.png" />
+    <Resource Include="Resources\022.png" />
+    <Resource Include="Resources\0211.png" />
+    <Resource Include="Resources\021.png" />
+    <Resource Include="Resources\0201.png" />
+    <Resource Include="Resources\020.png" />
+    <Resource Include="Resources\0191.png" />
+    <Resource Include="Resources\019.png" />
+    <Resource Include="Resources\0181.png" />
+    <Resource Include="Resources\018.png" />
+    <Resource Include="Resources\0171.png" />
+    <Resource Include="Resources\017.png" />
+    <Resource Include="Resources\0161.png" />
+    <Resource Include="Resources\016.png" />
+    <Resource Include="Resources\0151.png" />
+    <Resource Include="Resources\015.png" />
+    <Resource Include="Resources\0141.png" />
+    <Resource Include="Resources\014.png" />
+    <Resource Include="Resources\0131.png" />
+    <Resource Include="Resources\013.png" />
+    <Resource Include="Resources\0121.png" />
+    <Resource Include="Resources\012.png" />
+    <Resource Include="Resources\0111.png" />
+    <Resource Include="Resources\011.png" />
+    <Resource Include="Resources\0101.png" />
+    <Resource Include="Resources\010.png" />
+    <Resource Include="Resources\0091.png" />
+    <Resource Include="Resources\009.png" />
+    <Resource Include="Resources\0081.png" />
+    <Resource Include="Resources\008.png" />
+    <Resource Include="Resources\0071.png" />
+    <Resource Include="Resources\007.png" />
+    <Resource Include="Resources\0061.png" />
+    <Resource Include="Resources\006.png" />
+    <Resource Include="Resources\0051.png" />
+    <Resource Include="Resources\005.png" />
+    <Resource Include="Resources\0041.png" />
+    <Resource Include="Resources\004.png" />
+    <Resource Include="Resources\0031.png" />
+    <Resource Include="Resources\003.png" />
+    <Resource Include="Resources\0021.png" />
+    <Resource Include="Resources\002.png" />
+    <Resource Include="Resources\0011.png" />
+    <Resource Include="Resources\001.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\" />
+    <Folder Include="db\repo\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BanglaLib\BanglaLib.csproj">
+      <Project>{4d346c45-c56e-43e9-a1b9-688ff7a28178}</Project>
+      <Name>BanglaLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoemCLI\PoemCLI.csproj">
+      <Project>{ed055a80-19c0-4517-829b-b444b325d43a}</Project>
+      <Name>PoemCLI</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
