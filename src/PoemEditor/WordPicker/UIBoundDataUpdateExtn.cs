@@ -12,7 +12,7 @@ namespace WordPicker
     public static class UIBoundDataUpdateExtn
     {
         /// <summary>
-        /// 
+        /// Updated
         /// </summary>
         /// <param name="element"></param>
         public static void UpdateUITextBox(this FrameworkElement element)
