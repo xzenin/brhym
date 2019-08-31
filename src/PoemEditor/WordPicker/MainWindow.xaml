@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WordPicker"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded" Icon="db/ICO/003.ico">
 
-    <DockPanel LastChildFill="True">
+    <DockPanel x:Name="UI" LastChildFill="True" DataContext="{Binding ElementName=ViewModel}">
         <StackPanel DockPanel.Dock="Top">
             <Menu x:Name="mainMenu" IsMainMenu="True">
                 <MenuItem Header="File">
@@ -38,7 +38,7 @@
                 <MenuItem Header="Edit">Edit</MenuItem>
                 <MenuItem Header="Tool">
                     <MenuItem Header="Collect Word" Click="CollectWord_Click">
-                        
+
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Help">
@@ -49,7 +49,7 @@
 
                     </MenuItem>
                 </MenuItem>
-            </Menu>            
+            </Menu>
             <ToolBarTray>
                 <ToolBar>
                     <Button Command="New"  Content="New" />
@@ -58,21 +58,21 @@
                 </ToolBar>
             </ToolBarTray>
         </StackPanel>
-       
-        
+
+
         <StatusBar DockPanel.Dock="Bottom">
             <StackPanel Name="statusbar" Orientation="Horizontal">
                 <Label>Loaded:</Label>
                 <TextBox x:Name="txtStatus" Margin="2 5 0 0" Text="{Binding Status}"></TextBox>
                 <Label>|</Label>
                 <Label>Word:</Label>
-                <TextBox x:Name="txtWord" Margin="2 5 0 0" Width="200" Text="{Binding Word }"></TextBox>
+                <TextBox x:Name="txtWord" Margin="2 5 0 0" Width="200" Text="{Binding Word, UpdateSourceTrigger=PropertyChanged }"></TextBox>
                 <Label>|</Label>
                 <Label>Position:</Label>
-                <TextBox x:Name="txtSequence" Margin="2 5 0 0" Width="100" Text="{Binding Position }"></TextBox>
+                <TextBox x:Name="txtSequence" Margin="2 5 0 0" Width="100" Text="{Binding Position, UpdateSourceTrigger=PropertyChanged }"></TextBox>
                 <Label>|</Label>
                 <Label>Progress:</Label>
-                <ProgressBar Value="50" Margin="2 5 0 0"></ProgressBar>
+                <ProgressBar x:Name="overallProgress" Minimum="0" Maximum="100" Value="75" IsIndeterminate="False" Margin="2 5 0 0"></ProgressBar>
             </StackPanel>
         </StatusBar>
         <Grid Name="workArea">
@@ -87,7 +87,7 @@
             </Grid.RowDefinitions>
 
             <DockPanel HorizontalAlignment="Stretch">
-                <RichTextBox x:Name="txtNotepad"  TextChanged="TxtNotepad_TextChanged" KeyUp="TxtNotepad_KeyUp">
+                <RichTextBox x:Name="txtNotepad" KeyUp="TxtNotepad_KeyUp" SelectionChanged="TxtNotepad_SelectionChanged">
                     <FlowDocument>
                         <Paragraph FontSize="36">Hello, world!</Paragraph>
                         <Paragraph FontStyle="Italic" TextAlignment="Left" FontSize="14" Foreground="Gray">Thanks to the RichTextBox control, this FlowDocument is completely editable!</Paragraph>
@@ -103,42 +103,66 @@
             <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch" Background="#CCDDAA"/>
             <TabControl Grid.Column="2">
                 <TabItem Header="General" Name="contextual">
-                    <DockPanel  HorizontalAlignment="Stretch">
-                        <GroupBox DockPanel.Dock="Top" Margin="0 0 0 10" BorderBrush="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}">
+                    <DockPanel x:Name="rightPanel"  HorizontalAlignment="Stretch">
+
+                        <GroupBox DockPanel.Dock="Top" Margin="0 0 0 10" BorderBrush="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}" Background="#FFDDCCCC">
                             <GroupBox.Header>
-                                <TextBlock FontWeight="Bold" Text="Contexual Words"></TextBlock>
+                                <TextBlock FontWeight="Bold" Text="Contexual Words" Background="#FFC9C5D4"></TextBlock>
                             </GroupBox.Header>
                             <StackPanel>
                                 <DockPanel FlowDirection="LeftToRight">
                                     <Label Width="60">Word:</Label>
-                                    <TextBox x:Name="theWord">Word</TextBox>
+                                    <TextBox x:Name="theWord" Text="{Binding Word }"></TextBox>
                                 </DockPanel>
                                 <DockPanel FlowDirection="LeftToRight">
                                     <Label Width="60">Suggest:</Label>
-                                    <ComboBox Name="pickWord">Word</ComboBox>
+                                    <ComboBox Name="listSuggestion" ItemsSource="{Binding Suggestions}" 
+                                        SelectedValue="{Binding SelectedSuggestion}" 
+                                        SelectedValuePath="Word" DisplayMemberPath="Word" ></ComboBox>
                                 </DockPanel>
                             </StackPanel>
                         </GroupBox>
-                        <GroupBox DockPanel.Dock="Top">
-                            <GroupBox.Header>
-                                <TextBlock FontWeight="Bold" Text="Suggested Words"></TextBlock>
-                            </GroupBox.Header>
-                            <StackPanel>
-                                <ListBox x:Name="listSuggestion">
-                                    <ListBoxItem>
-                                        One
-                                    </ListBoxItem>
-                                    <ListBoxItem>
-                                        Two
-                                    </ListBoxItem>
-                                </ListBox>
-                            </StackPanel>
-                        </GroupBox>
+
+                        <Grid DockPanel.Dock="Top">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <GroupBox Grid.Row="0" Background="#FFF1DFDF">
+                                <GroupBox.Header>
+                                    <TextBlock FontWeight="Bold" Text="Starts With"></TextBlock>
+                                </GroupBox.Header>
+                                <StackPanel>
+                                    <ListBox x:Name="listStartWith" ItemsSource="{Binding StartsWith}" 
+                                        SelectedValue="{Binding SelectedSuggestion}" 
+                                        SelectedValuePath="Word" DisplayMemberPath="Word"  />
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Grid.Row="1" Background="#FFD1DAD2">
+                                <GroupBox.Header>
+                                    <TextBlock FontWeight="Bold" Text="Ends With"></TextBlock>
+                                </GroupBox.Header>
+                                <StackPanel>
+                                    <ListBox x:Name="listEndsWith" ItemsSource="{Binding EndsWith}" 
+                                        SelectedValue="{Binding SelectedSuggestion}" 
+                                        SelectedValuePath="Word" DisplayMemberPath="Word"  />
+                                </StackPanel>
+                            </GroupBox>
+                        </Grid>
+
                     </DockPanel>
                 </TabItem>
                 <TabItem Header="Console" Name="logBack">
-                    <TextBox x:Name="txtConsole">
-                        Content goes here
+                    <TextBox x:Name="txtConsole" Text="{Binding Text}" 
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"                             
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             ScrollViewer.CanContentScroll="True">
+
                     </TextBox>
                 </TabItem>
             </TabControl>

@@ -3,6 +3,7 @@ using BanglaLib.Lib.Model;
 using PoemEditor.Config;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,7 @@ namespace WordPicker
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         string defaultFile = "_default.json";
         Option option = new Option();
@@ -36,26 +37,49 @@ namespace WordPicker
         bool dirty = false;
         string currentFileInOpening;
         bool running = false;
-       
-        public MainModel Model { get; set; }
+        public delegate void UpdateTextCallback(string message);
+        MainModel model;
+        public MainModel ViewModel { get {
+                return model;
+            } set {
+                model = value;
+                NotifyPropertyChanged("ViewModel");
+            } }
         public MainWindow()
         {
             InitializeComponent();
             option.FileName = defaultFile;
             synchronizationContext = SynchronizationContext.Current;
-            Model = new MainModel();
-            Model.Status = DateTime.Now.ToString();
-            this.statusbar.DataContext = Model;
+            ViewModel = new MainModel();
+            ViewModel.Init();
+            ViewModel.Status = DateTime.Now.ToString();
+            ViewModel.Word = DateTime.Now.ToString();
+            this.UI.DataContext = model;
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyPropertyChanged(string property)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(property));
+            }
         }
 
+        private void UpdateModelView(object model)
+        {
+           
+            /*
+            Application.Current.Dispatcher.Invoke(() => {
+               // this.statusbar.DataContext = model;
+                this.statusbar.UpdateUIElement();
+               // this.rightPanel.DataContext = model;
+                this.rightPanel.UpdateUIElement();
+            });
+            */
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             LoadConfig();
-            //Model.Status = "Configuration read.";
-            //Model.Position = (sequence++).ToString();
-            Model.Word = "NothingSelected";
-
-            //Model.Word = DateTime.Now.ToString();
         }
         private void LoadConfig()
         {
@@ -63,11 +87,10 @@ namespace WordPicker
             var opt = app.CreateOption(defaultFile);
             app.WriteOption(defaultFile, opt);
             option = app.ReadOption(option.FileName);
-           
         }
         private void WriteLine(string line)
         {
-            txtConsole.Text += Environment.NewLine + line;
+            txtConsole.Text = line + Environment.NewLine + txtConsole.Text;
         }
 
         private void TxtNotepad_TextChanged(object sender, TextChangedEventArgs e)
@@ -80,35 +103,43 @@ namespace WordPicker
 
         private  void CollectWord_Click(object sender, RoutedEventArgs e)
         {
-            if (!running)
-            {
-                running = true;
-                Task.Run(() =>
-                {
-                    while (running)
-                    {
-                        Model.Status = "Configuration:";
-                        Model.Position = (sequence++).ToString();
-                        Model.Word = DateTime.Now.ToString();
-                        statusbar.UpdateUITextBox();
-                        Thread.Sleep(2000);
-                    }
-                });
-            }
-            else
-            {
-                running = false;
-            }
-            /*
             try
             {
-                //Cursor.Current = Cursors.WaitCursor;
-                WordBreaker breaker = new WordBreaker(option.Location.DBFolder);
-                string wordFile = System.IO.Path.Combine(option.Location.DBFolder, "Bangla.txt");
-                breaker.InitializeFolder();
-                breaker.BreakFile(wordFile);
-                breaker.WriteBack();
-                WriteLine("Completed word breaking process.");
+                ViewModel.Word = "Starting..";
+                overallProgress.IsIndeterminate = true;
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.WorkerReportsProgress = true;
+                worker.DoWork += new DoWorkEventHandler( (s1,e1)=> {
+                    WordBreaker breaker = new WordBreaker(option.Location.DBFolder);
+                    string wordFile = System.IO.Path.Combine(option.Location.DBFolder, "Bangla.txt");
+                    breaker.InitializeFolder();
+                    breaker.OnWrite += new WordBreaker.WriteLogger((s4, e4) => {
+                        if (e4.Status == BanglaLib.Spider.ExecutionSatus.NewWord)
+                        {
+                            txtConsole.Dispatcher.Invoke(
+                                        new UpdateTextCallback(this.WriteLine),   
+                                        new object[] {e4.Line } );
+                            ViewModel.Word = e4.Line;
+                        }
+                        else
+                        {
+                            model.Word = e4.Line;
+                            //UpdateModelView(ViewModel);
+                        }
+                    });
+                    breaker.BreakFile(wordFile);
+                    breaker.WriteBack();
+                   
+                });
+                worker.ProgressChanged += new ProgressChangedEventHandler((s2, e2) => {
+                    WriteLine("String working.");
+                });
+                worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler((s3, e3) => {
+                    WriteLine("Completed word breaking process.");
+                });
+                worker.RunWorkerAsync(10000);
+
+              
             }
             catch (Exception ex)
             {
@@ -116,69 +147,12 @@ namespace WordPicker
             }
             finally
             {
-                //Cursor.Current = Cursors.Default;
-            }
-            */
+                overallProgress.IsIndeterminate = false;
+            }            
 
         }
 
-        private void TxtNotepad_KeyUp(object sender, KeyEventArgs e)
-        {
-            TextRange textRange = new TextRange(txtNotepad.Document.ContentStart, txtNotepad.Document.ContentEnd);
-            MessageBox.Show(textRange.Text);
-            /*
-            if (e.Key == Key.F4)
-            {
-                string word = Model.Word;
-                if (!bangla.Any())
-                {
-                    WordBreaker breaker = new WordBreaker(option.Location.DBFolder);
-                    bangla = breaker.ReadWordFromRepository();
-                }
-                Suggest(word);
-                return;
-            }
 
-            var posInLine = txtNotepad.SelectionStart - richTextBoxEditor.GetFirstCharIndexOfCurrentLine();
-            toolStripStatusCursorPosition.Text = "" + posInLine;
-            string guessWord = richTextBoxEditor.Text;
-            int start = richTextBoxEditor.SelectionStart;
-            int previousSpace = 0;
-            for (int i = start - 1; i >= 0; i--)
-            {
-                char ch = richTextBoxEditor.Text[i];
-                previousSpace = i;
-                if (char.IsWhiteSpace(ch))
-                {
-                    break;
-                }
-            }
-            int nextSpace = start;
-            for (int i = start; i < richTextBoxEditor.Text.Length;)
-            {
-                char ch = richTextBoxEditor.Text[i];
-                nextSpace = ++i;
-                if (char.IsWhiteSpace(ch))
-                {
-                    break;
-                }
-
-            }
-            if (previousSpace >= nextSpace)
-            {
-                guessWord = "";
-                WriteLine("Space here.");
-            }
-            else
-            {
-                int totalchar = nextSpace - previousSpace;
-                guessWord = richTextBoxEditor.Text.Substring(previousSpace, totalchar);
-            }
-            guessWord = guessWord.Trim();
-            toolStripStatusCurrentWord.Text = guessWord;
-            textBoxTheWord.Text = guessWord;
-            */
-        }
         private List<LikeWord> StartsWith(string word)
         {
             List<LikeWord> likes = new List<LikeWord>();
@@ -187,7 +161,7 @@ namespace WordPicker
             if (dic == null)
             {
                 likes.Add(
-                    new LikeWord()
+                    new LikeWord(word)
                     {
                         Word = word,
                         ID = 0,
@@ -206,6 +180,50 @@ namespace WordPicker
         private void Window_Exit(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+        private string GetCurrentWord(RichTextBox notepad)
+        {
+            TextPointer start = notepad.CaretPosition;
+            TextPointer end = notepad.CaretPosition;
+            
+            string stringBeforeCaret = start.GetTextInRun(LogicalDirection.Backward);
+            string stringAfterCaret = start.GetTextInRun(LogicalDirection.Forward);
+            int countToMoveLeft = 0;
+            int countToMoveRight = 0;
+
+            for (int i = stringBeforeCaret.Length - 1; i >= 0; --i)
+            {
+                if (char.IsLetter(stringBeforeCaret[i]))
+                    ++countToMoveLeft;
+                else break;
+            }
+
+
+            for (int i = 0; i < stringAfterCaret.Length; ++i)
+            {
+                if (char.IsLetter(stringAfterCaret[i]))
+                    ++countToMoveRight;
+                else break; 
+            }
+
+            start = start.GetPositionAtOffset(-countToMoveLeft); 
+            end = end.GetPositionAtOffset(countToMoveRight); 
+            TextRange r = new TextRange(start, end);
+            string text = r.Text;
+            return text;
+        }
+
+      
+        private void TxtNotepad_KeyUp(object sender, KeyEventArgs e)
+        {
+            ViewModel.Word = GetCurrentWord(txtNotepad);
+            UpdateModelView(ViewModel);
+        }
+
+        private void TxtNotepad_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            ViewModel.Word = GetCurrentWord(txtNotepad);
+            UpdateModelView(ViewModel);
         }
     }
 }

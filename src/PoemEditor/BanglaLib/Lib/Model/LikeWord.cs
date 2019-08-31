@@ -13,6 +13,15 @@ namespace BanglaLib.Lib.Model
         public string POS { get; set; }
         public string Source { get; set; }
         public DateTime On { get; set; }
+
+        public LikeWord(string word)
+        {
+            Word = word;
+            On = DateTime.Now;
+            ID = this.On.Ticks;
+            Source = "Auto";
+            POS = "NA";
+        }
     }
     public class LikeDictionary {
         public long Index { get; set; }
