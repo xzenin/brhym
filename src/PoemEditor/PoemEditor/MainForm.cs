@@ -169,7 +169,7 @@ namespace PoemEditor
             if (dic == null)
             {
                 likes.Add(
-                    new LikeWord()
+                    new LikeWord(word)
                     {
                         Word = word,
                         ID = 0,

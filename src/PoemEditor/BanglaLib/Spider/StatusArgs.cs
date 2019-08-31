@@ -8,6 +8,7 @@ namespace BanglaLib.Spider
     {
         public ExecutionSatus Status { get; set; }
         public string  Line { get; set; }
+        public FetchModel Model { get; set; }
 
         public StatusArgs(string message="Working....") {
             Line = message;

@@ -18,7 +18,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using WordPicker.Config;
+
+using WordPicker.GUI;
+using WordPicker.Model;
 
 namespace WordPicker
 {
@@ -224,6 +226,12 @@ namespace WordPicker
         {
             ViewModel.Word = GetCurrentWord(txtNotepad);
             UpdateModelView(ViewModel);
+        }
+
+        private void CrawlSite_Click(object sender, RoutedEventArgs e)
+        {
+            CrawlWindow window = new CrawlWindow();
+            window.ShowDialog();
         }
     }
 }

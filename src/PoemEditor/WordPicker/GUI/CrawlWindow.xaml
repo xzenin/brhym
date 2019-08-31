@@ -1,72 +1,35 @@
-﻿<Window x:Class="WordPicker.MainWindow"
+﻿<Window x:Class="WordPicker.GUI.CrawlWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WordPicker"
+        xmlns:local="clr-namespace:WordPicker.GUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded" Icon="db/ICO/003.ico">
-
+        Title="CrawlWindow" Height="450" Width="800" Activated="Window_Activated" Closing="Window_Closing">
     <DockPanel x:Name="UI" LastChildFill="True" DataContext="{Binding ElementName=ViewModel}">
         <StackPanel DockPanel.Dock="Top">
             <Menu x:Name="mainMenu" IsMainMenu="True">
                 <MenuItem Header="File">
                     <MenuItem Header="New">
 
-                    </MenuItem>
-                    <MenuItem Header="Open">
-
-                    </MenuItem>
-                    <MenuItem Header="Close">
-
-                    </MenuItem>
-                    <MenuItem Header="Save">
-
-                    </MenuItem>
-                    <MenuItem Header="SaveAs">
-
-                    </MenuItem>
+                    </MenuItem> 
                     <Separator />
-                    <MenuItem Header="Options">
-
-                    </MenuItem>
-                    <Separator />
-                    <MenuItem Header="Exit" Click="Window_Exit">
+                    <MenuItem Header="Exit" >
 
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Edit">Edit</MenuItem>
-                <MenuItem Header="Tool">
-                    <MenuItem Header="Collect Word" Click="CollectWord_Click">
-
-                    </MenuItem>
-                </MenuItem>
-                <MenuItem Header="Help">
-                    <MenuItem Header="About">
-
-                    </MenuItem>
-                    <MenuItem Header="Update">
-
-                    </MenuItem>
-                </MenuItem>
+               
             </Menu>
-            <ToolBarTray>
-                <ToolBar>
-                    <Button Command="New"  Content="New" />
-                    <Button Command="Delete" Content="Delete" />
-                    <Button Command="Refresh" Content="Refresh" />
-                </ToolBar>
-            </ToolBarTray>
+         
         </StackPanel>
-
 
         <StatusBar DockPanel.Dock="Bottom">
             <StackPanel Name="statusbar" Orientation="Horizontal">
                 <Label>Loaded:</Label>
                 <TextBox x:Name="txtStatus" Margin="2 5 0 0" Text="{Binding Status}"></TextBox>
                 <Label>|</Label>
-                <Label>Word:</Label>
-                <TextBox x:Name="txtWord" Margin="2 5 0 0" Width="200" Text="{Binding Word, UpdateSourceTrigger=PropertyChanged }"></TextBox>
+                <Label>Url:</Label>
+                <TextBox x:Name="txtUrl" Margin="2 5 0 0" Width="200" Text="{Binding Url, UpdateSourceTrigger=PropertyChanged }"></TextBox>
                 <Label>|</Label>
                 <Label>Position:</Label>
                 <TextBox x:Name="txtSequence" Margin="2 5 0 0" Width="100" Text="{Binding Position, UpdateSourceTrigger=PropertyChanged }"></TextBox>
@@ -87,9 +50,9 @@
             </Grid.RowDefinitions>
 
             <DockPanel HorizontalAlignment="Stretch">
-                <RichTextBox x:Name="txtNotepad" KeyUp="TxtNotepad_KeyUp" SelectionChanged="TxtNotepad_SelectionChanged">
+                <ScrollViewer>
+                <RichTextBox x:Name="txtNotepad" >
                     <FlowDocument>
-                        <Paragraph FontSize="36">Hello, world!</Paragraph>
                         <Paragraph FontStyle="Italic" TextAlignment="Left" FontSize="14" Foreground="Gray">Thanks to the RichTextBox control, this FlowDocument is completely editable!</Paragraph>
                     </FlowDocument>
                     <RichTextBox.Resources>
@@ -98,6 +61,7 @@
                         </Style>
                     </RichTextBox.Resources>
                 </RichTextBox>
+                </ScrollViewer>
             </DockPanel>
 
             <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch" Background="#CCDDAA"/>
@@ -107,18 +71,20 @@
 
                         <GroupBox DockPanel.Dock="Top" Margin="0 0 0 10" BorderBrush="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}" Background="#FFDDCCCC">
                             <GroupBox.Header>
-                                <TextBlock FontWeight="Bold" Text="Contexual Words" Background="#FFC9C5D4"></TextBlock>
+                                <TextBlock FontWeight="Bold" Text="Scanning" Background="#FFC9C5D4"></TextBlock>
                             </GroupBox.Header>
                             <StackPanel>
                                 <DockPanel FlowDirection="LeftToRight">
-                                    <Label Width="60">Word:</Label>
-                                    <TextBox x:Name="theWord" Text="{Binding Word }"></TextBox>
+                                    <Label Width="60">URL:</Label>
+                                    <TextBox x:Name="theUrl" Text="{Binding Url }"></TextBox>
                                 </DockPanel>
                                 <DockPanel FlowDirection="LeftToRight">
-                                    <Label Width="60">Suggest:</Label>
-                                    <ComboBox Name="listSuggestion" ItemsSource="{Binding Suggestions}" 
-                                        SelectedValue="{Binding SelectedSuggestion}" 
-                                        SelectedValuePath="Word" DisplayMemberPath="Word" ></ComboBox>
+                                    <CheckBox x:Name="chkSameDomain" IsChecked="True">Only Same Domain</CheckBox>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="btnGo" Padding="10 0 10 0" Margin="10 0 5 0 " Click="BtnGo_Click">GO</Button>
+                                        <Button x:Name="btnCancel"  Padding="10 0 10 0" Margin="5 0 10 0 " Click="BtnCancel_Click" >Stop</Button>
+                                    </StackPanel>
+                                
                                 </DockPanel>
                             </StackPanel>
                         </GroupBox>
@@ -135,22 +101,56 @@
                             </Grid.RowDefinitions>
                             <GroupBox Grid.Row="0" Background="#FFF1DFDF">
                                 <GroupBox.Header>
-                                    <TextBlock FontWeight="Bold" Text="Starts With"></TextBlock>
+                                    <TextBlock FontWeight="Bold" Text="Working Queue"></TextBlock>
                                 </GroupBox.Header>
                                 <StackPanel>
-                                    <ListBox x:Name="listStartWith" ItemsSource="{Binding StartsWith}" 
-                                        SelectedValue="{Binding SelectedSuggestion}" 
-                                        SelectedValuePath="Word" DisplayMemberPath="Word"  />
+                                   
+                                        <ListView x:Name="listWorkingQueue"    VerticalContentAlignment="Top"  
+          ScrollViewer.VerticalScrollBarVisibility="Visible"
+          ScrollViewer.CanContentScroll="False" ItemsSource="{Binding UrlInProgress }">
+                                            <ListView.View>
+                                                <GridView>
+                                                   
+                                                    <GridViewColumn Header="Url" Width="100">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Url}" TextDecorations="Underline" Foreground="Blue" Cursor="Hand" />
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <GridViewColumn Header="Status" Width="70" DisplayMemberBinding="{Binding StatusText}" />
+                                                    <GridViewColumn Header="Domain" Width="100" DisplayMemberBinding="{Binding Domain}" />
+                                                </GridView>
+                                            </ListView.View>
+                                        </ListView>  
+                                  
                                 </StackPanel>
                             </GroupBox>
                             <GroupBox Grid.Row="1" Background="#FFD1DAD2">
                                 <GroupBox.Header>
-                                    <TextBlock FontWeight="Bold" Text="Ends With"></TextBlock>
+                                    <TextBlock FontWeight="Bold" Text="Database Links Pages"></TextBlock>
                                 </GroupBox.Header>
                                 <StackPanel>
-                                    <ListBox x:Name="listEndsWith" ItemsSource="{Binding EndsWith}" 
-                                        SelectedValue="{Binding SelectedSuggestion}" 
-                                        SelectedValuePath="Word" DisplayMemberPath="Word"  />
+                                    
+                                        <ListView x:Name="listEndsWith"    VerticalContentAlignment="Top"  
+          ScrollViewer.VerticalScrollBarVisibility="Visible"
+          ScrollViewer.CanContentScroll="False" ItemsSource="{Binding UrlInDB}">
+                                            <ListView.View>
+                                                <GridView>
+
+                                                    <GridViewColumn Header="Url" Width="100">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Url}" TextDecorations="Underline" Foreground="Blue" Cursor="Hand" />
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <GridViewColumn Header="Status" Width="70" DisplayMemberBinding="{Binding StatusText}" />
+                                                    <GridViewColumn Header="Domain" Width="100" DisplayMemberBinding="{Binding Domain}" />
+                                                </GridView>
+                                            </ListView.View>
+                                        </ListView>
+                                   
                                 </StackPanel>
                             </GroupBox>
                         </Grid>
@@ -158,6 +158,7 @@
                     </DockPanel>
                 </TabItem>
                 <TabItem Header="Console" Name="logBack">
+                    
                     <TextBox x:Name="txtConsole" Text="{Binding Text}" 
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"                             
                              ScrollViewer.VerticalScrollBarVisibility="Auto"

@@ -24,34 +24,39 @@ namespace BanglaLib.Spider
             ServicePointManager.DefaultConnectionLimit = 100;
         }
 
-        BlockingCollection<string> PENDING;
-        ConcurrentDictionary<string, FetchModel> DB = new ConcurrentDictionary<string, FetchModel>();
+        BlockingCollection<FetchModel> inProgressModels;
+        ConcurrentDictionary<string, FetchModel> pageDatabase;
+        ConcurrentDictionary<string, FetchModel> words;
 
 
-        ConcurrentDictionary<string, FetchModel> words = new ConcurrentDictionary<string, FetchModel>();
         public delegate void WriteLogger(object o, StatusArgs args);
-
         public event WriteLogger OnWrite;
 
         Timer urlFetchTimer;
         Timer dbSaveTimer;
         bool living = true;
         int workInProgress = 0;
-        int MAX_THREAD = 10;
+        int MAX_THREAD = 2;
         DateTime pstartTime = DateTime.Now;
 
         object dblock = new object();
 
         string repoFolder;
         Dictionary<char, LikeDictionary> likeDictionary;
+        BlockingCollection<Task> workingTask = new BlockingCollection<Task>();
         WordBreaker breaker;
 
         public int WorkInProgress { get => workInProgress; set => workInProgress = value; }
         public WordBreaker Breaker { get => breaker; set => breaker = value; }
         public ConcurrentDictionary<string, FetchModel> Words { get => words; set => words = value; }
+        public BlockingCollection<Task> WorkingTask { get => workingTask; set => workingTask = value; }
+
 
         public Crawler(string baseFolder)
         {
+            words = new ConcurrentDictionary<string, FetchModel>();
+            inProgressModels = new BlockingCollection<FetchModel>(MAX_THREAD);
+            pageDatabase = new ConcurrentDictionary<string, FetchModel>();
             repoFolder = baseFolder;
             Breaker = new WordBreaker(repoFolder);
             breaker.InitializeFolder();
@@ -67,18 +72,76 @@ namespace BanglaLib.Spider
             Debug.WriteLine(line);
         }
 
+        private FetchModel AddUrlToDB(FetchModel model)
+        {
+            if (!pageDatabase.ContainsKey(model.Key))
+            {
+                pageDatabase[model.Key] = model;
+                OnWrite(model, new StatusArgs()
+                {
+                    Line = "New Url Added->" + model.Key,
+                    Model = model,
+                    Status = ExecutionSatus.NewUrlAdded
+                });
+                return model;
+            }
+            return null;
+        }
+        private FetchModel AddUrlToDB(string url)
+        {
+            FetchModel model = new FetchModel() { Url = url };
+            return AddUrlToDB(model);
+        }
+        private FetchModel UpdateModelInDB(FetchModel model)
+        {
+            lock (dblock)
+            {
+                if (pageDatabase.ContainsKey(model.Key))
+                {
+                    pageDatabase[model.Key] = model;
+                }
+            }
+            return model;
+        }
+        private FetchModel UpdateDownlaoded(FetchModel model)
+        {
+            model.Downloaded = DateTime.Now;
+            model.Status = 3;
+            UpdateModelInDB(model);
+            return model;
+        }
+        private FetchModel UpdateCompleted(FetchModel model)
+        {
+            model.Done = DateTime.Now;
+            model.Status = 5;
+            UpdateModelInDB(model);
+            return model;
+        }
+        private FetchModel UpdateQueued(FetchModel model)
+        {
+            model.Added  = DateTime.Now;
+            model.Status = 2;
+            UpdateModelInDB(model);
+            return model;
+        }
+        private FetchModel GetModelFromDB(FetchModel model)
+        {
+            if (pageDatabase.ContainsKey(model.Key))
+            {
+                return pageDatabase[model.Key];
+            }
+            return null;
+        }
+
         public void Start(string url)
         {
             pstartTime = DateTime.Now;
-            PENDING = new BlockingCollection<string>(MAX_THREAD);
 
-            FetchModel model = new FetchModel() { Url = url };
-            DB[url.ToLower()] = model;
-
+            AddUrlToDB(url);
 
             urlFetchTimer = new Timer(1000);
             urlFetchTimer.Elapsed += Timer_Elapsed;
-            dbSaveTimer = new Timer(5000);
+            dbSaveTimer = new Timer(10000);
             dbSaveTimer.Elapsed += DbSaveTimer_Elapsed;
             urlFetchTimer.Start();
             dbSaveTimer.Start();
@@ -87,26 +150,42 @@ namespace BanglaLib.Spider
         public void Stop()
         {
             living = false;
-            urlFetchTimer.Stop();
-            urlFetchTimer = null;
-            dbSaveTimer.Stop();
-            dbSaveTimer = null;
+            try
+            {
+                //urlFetchTimer.Stop();
+                urlFetchTimer = null;
+                //dbSaveTimer.Stop();
+                dbSaveTimer = null;
+                WorkingTask.ToList().ForEach(t =>
+                {
+                    // t.Dispose();
+                });
+            }
+            catch
+            {
+            }
             OnWrite(this, new StatusArgs("Stopped the job"));
         }
 
         private void DbSaveTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            try
+            WorkingTask.Add(Task.Run(() =>
             {
-                
-                string file = Path.Combine(repoFolder, "_temp_db.jdxn");
-                DB.Save(file);
-                OnWrite(this, new StatusArgs("DB File saved "));
-            }
-            catch (Exception ex)
-            {
-                OnWrite(this, new StatusArgs("Started the job") {  Status = ExecutionSatus.Error });
-            }
+                try
+                {
+                    string file = Path.Combine(repoFolder, "_temp_db.jdxn");
+                    pageDatabase.Save(file);
+                    OnWrite(this, new StatusArgs("DB File saved "));
+                    WorkingTask.Where(x => x.IsCompleted).ToList().ForEach(x =>
+                    {
+                        // x.Dispose();
+                    });
+                }
+                catch (Exception ex)
+                {
+                    OnWrite(this, new StatusArgs("Started the job") { Status = ExecutionSatus.Error });
+                }
+            }));
         }
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
@@ -114,75 +193,90 @@ namespace BanglaLib.Spider
             WorkInProgress++;
             if (living)
             {
-                OnWrite(this, new StatusArgs("Running Producer/Consumer") );
-                //Consume
-                ConsumeOne();
+                OnWrite(this, new StatusArgs("Running Producer/Consumer"));
                 //Produce
                 ProduceMore();
+                //Consume
+                ConsumeOne();
             }
         }
 
         private void ConsumeOne()
         {
-            Task.Run(() =>
+            WorkingTask.Add(Task.Run(() =>
             {
-                if (!PENDING.IsCompleted)
+                if (!inProgressModels.IsCompleted)
                 {
-                    var url = PENDING.Take();
-                    OnWrite(this, new StatusArgs("Job Found - Working: " + url) {  Status = ExecutionSatus.JobFound});
-                    WorkOnUrl("" + url);
+                    var model = inProgressModels.Take();
+                    OnWrite(this, new StatusArgs("Job Found - Working: " + model.Url)
+                    {
+                        Status = ExecutionSatus.JobFound,
+                        Model = model
+                    });
+                    WorkOnUrl(model);
                 }
-            });
+            }));
         }
         private void ProduceMore()
         {
-            Task.Run(() =>
+            WorkingTask.Add(Task.Run(() =>
             {
 
                 lock (dblock)
                 {
-                    var values = DB.Values;
-                    FetchModel model = values.Where(x => !x.IsStarted()).FirstOrDefault();
+                    var values = pageDatabase.Values;
+                    //Get next new item
+                    FetchModel model = values.Where(x => x.Status<=0 ).FirstOrDefault();
                     if (model != null)
-                    {                      
-                        bool added = PENDING.TryAdd(model.Url);
-                        model.Added = DateTime.Now;
-                        DB[model.Url.ToLower()] = model;
-                        OnWrite(this, new StatusArgs("Adding new Job: " + model.Url) { Status = ExecutionSatus.NewJobEnqued });
-
+                    {
+                        bool added = inProgressModels.TryAdd(model.Clone());
+                        if (added)
+                        {
+                            UpdateCompleted(model);
+                            OnWrite(this, new StatusArgs("Adding new Job: " + model.Url)
+                            {
+                                Status = ExecutionSatus.NewJobEnqued,
+                                Model = model
+                            });
+                        }
                     }
                 }
 
-            });
+            }));
         }
-        private void WorkOnUrl(string url)
+        private void WorkOnUrl(FetchModel model)
         {
             try
             {
-                FetchModel model = DB[url.ToLower()];
-                Download(model);
+                var dbCopy = GetModelFromDB(model);
+                Download(dbCopy);
             }
-            catch (Exception mxc) { 
+            catch (Exception mxc)
+            {
+                OnWrite(this, new StatusArgs("Bad URL or could not work. Error: " + mxc.Message) { Status = ExecutionSatus.Error, Model = model });
             }
         }
         private FetchModel Download(FetchModel model)
         {
+            var downloadTask = new List<Task>();
             try
             {
                 WebClient client = new WebClient();
                 client.Encoding = Encoding.UTF8;
                 model.Html = client.DownloadString(model.Url);
-                model.Downloaded = DateTime.Now;
+                UpdateDownlaoded(model);
+
                 OnWrite(this, new StatusArgs("Downloaded : " + model.Url) { Status = ExecutionSatus.Downloaded });
-                   HtmlDocument document = new HtmlDocument();
-                        document.LoadHtml(model.Html);
-                Task.Run(() =>
+
+                HtmlDocument document = new HtmlDocument();
+                document.LoadHtml(model.Html);
+                downloadTask.Add(Task.Run(() =>
                 {
                     try
                     {
                         string root = model.Domain;
-                        OnWrite(this, new StatusArgs("Working on link" ));
-                     
+                        OnWrite(this, new StatusArgs("Working on link"));
+
 
                         List<FetchModel> linkModels = new List<FetchModel>();
                         foreach (HtmlNode link in document.DocumentNode.SelectNodes("//a[@href]"))
@@ -205,7 +299,7 @@ namespace BanglaLib.Spider
                             }
                         }
 
-                        WriteLine(string.Join(",", linkModels.Select(x=>x.Url).ToArray()));
+                        WriteLine(string.Join(",", linkModels.Select(x => x.Url).ToArray()));
 
                         foreach (var m in linkModels)
                         {
@@ -214,14 +308,15 @@ namespace BanglaLib.Spider
                                 string key = m.Url.ToLower();
                                 if (key.StartsWith(m.Domain))
                                 {
-                                    if (!DB.ContainsKey(key))
+                                    var copied = AddUrlToDB(m);
+                                    if (copied != null)
                                     {
-                                        DB[key] = m;
-                                        OnWrite(this, new StatusArgs("New Link found." + key) { Status = ExecutionSatus.NewUrlAdded });
-                                    }
-                                    else
-                                    {
-                                        WriteLine("Already added..." + m.Url);
+                                        pageDatabase[key] = m;
+                                        OnWrite(this, new StatusArgs("New Link found." + key)
+                                        {
+                                            Status = ExecutionSatus.NewUrlAdded,
+                                            Model = copied
+                                        });
                                     }
                                 }
                                 else
@@ -229,17 +324,20 @@ namespace BanglaLib.Spider
                                     WriteLine("Skipping..." + m.Url);
                                 }
                             }
-                            catch (Exception mdx) {
+                            catch (Exception mdx)
+                            {
                                 OnWrite(this, new StatusArgs("Error in adding links." + mdx.Message) { Status = ExecutionSatus.Error });
                             }
                         }
+                        model.Parsed = DateTime.Now;
+                        UpdateModelInDB(model);
                     }
                     catch (Exception ecx)
                     {
                         OnWrite(this, new StatusArgs("Error in parsing links." + ecx.Message) { Status = ExecutionSatus.Error });
                     }
-                });
-                Task.Run(() =>
+                }));
+                downloadTask.Add(Task.Run(() =>
                 {
                     //HtmlDocument document = new HtmlDocument();
                     //document.LoadHtml(model.Html);
@@ -279,19 +377,23 @@ namespace BanglaLib.Spider
                         try
                         {
                             Breaker.ProcessWord(w);
-                            OnWrite(Breaker.NewWordDiscovery.Values, new StatusArgs(w) { Status = ExecutionSatus.NewWord });
+                            OnWrite(Breaker.NewWordDiscovery.Values, new StatusArgs(w)
+                            {
+                                Status = ExecutionSatus.NewWord,
+                                Model = model
+                            });
                         }
                         catch
                         {
 
                         }
                     }
-                
-                    WriteLine("Completed model:" + model.Url);
-                    model.Parsed = DateTime.Now;
-                    DB[model.Url.ToLower()] = model;
 
-                });
+                    WriteLine("Completed model:" + model.Url);
+                    UpdateCompleted(model);
+                }));
+                Task.WaitAll(downloadTask.ToArray());
+
             }
             catch (Exception ex)
             {

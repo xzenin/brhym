@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 
-namespace WordPicker.Config
+namespace WordPicker.Model
 {
     public class MainModel : INotifyPropertyChanged
     {
