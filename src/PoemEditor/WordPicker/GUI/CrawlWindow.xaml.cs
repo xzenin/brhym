@@ -30,6 +30,7 @@ namespace WordPicker.GUI
         Option option = new Option();
         public delegate void UpdateTextCallback(string message);
         Timer timer;
+
         public CrawlWindow()
         {
             InitializeComponent();
@@ -42,49 +43,70 @@ namespace WordPicker.GUI
             model.Url = "http://www.tagoreweb.in/";
             this.UI.DataContext = model;
         }
+        private void UpdateModelView(Action code)
+        {
+            Task.Run(() =>
+            {
+                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, code);                    
+            });
+        }
 
         private void BtnGo_Click(object sender, RoutedEventArgs e)
         {
             spider = new Crawler(option.Location.DocumentFolder);
             spider.OnWrite += new Crawler.WriteLogger((k, arg) =>
             {
-                Task.Run(() =>
-                {
-                    Application.Current.Dispatcher.BeginInvoke(
-                          DispatcherPriority.Background,
-                          new Action(() =>
-                          {
-                              switch (arg.Status)
-                              {
-                                  case ExecutionSatus.NewWord:
-                                      UpdateNotePad(arg.Line);
-                                      break;
-                                  case ExecutionSatus.NewJobEnqued:
-                                      DebugMessage(arg.Line);
-                                      model.AddToProgress(arg.Model);
-                                      break;
-                                  case ExecutionSatus.NewUrlAdded:
-                                      DebugMessage(arg.Line);
-                                      if (arg.Model.IsComplete())
-                                      {
-                                          model.AddToDone(arg.Model);
-                                      }
-                                      else
-                                      {
-                                          model.AddToDB(arg.Model);
-                                      }
-                                      break;
-                                  case ExecutionSatus.Error:
-                                      DebugMessage(arg.Line);
-                                      break;
-                                  default:
-                                      DebugMessage(arg.Line);
-                                      break;
-                              }
+                UpdateModelView(() => {
+                    DebugMessage(arg.Line);
+                });
+            });
+            spider.OnStart += new Crawler.WriteLogger((k, arg) =>
+            {
+                UpdateModelView(() => {
+                    overallProgress.IsIndeterminate = true;
+                });
+               
+            });
 
-                          }));
+            spider.OnStop += new Crawler.WriteLogger((k, arg) =>
+            {
+                UpdateModelView(() => {
+                    overallProgress.IsIndeterminate = false;
+                });
 
+            });
 
+            spider.OnNewLink += new Crawler.WriteLogger((k, arg) =>
+            {
+                UpdateModelView(() => {
+                    model.AddToDB(arg.Model);
+                });
+              
+            });
+            spider.OnJobQueue += new Crawler.WriteLogger((k, arg) =>
+            {
+                UpdateModelView(() => {
+                    model.AddToProgress(arg.Model);
+                });
+            });
+            spider.OnJobDequeue += new Crawler.WriteLogger((k, arg) =>
+            {
+                UpdateModelView(() => {
+                    model.RomoveFromProgress(arg.Model);
+                });               
+            });
+
+            spider.OnNewLine += new Crawler.WriteLogger((k, arg) =>
+            {
+                UpdateModelView(() => {
+                    txtNotepad.Text = arg.Model.Html;
+                });
+            });
+
+            spider.OnNewWord += new Crawler.WriteLogger((k, arg) =>
+            {
+                UpdateModelView(() => {
+                   txtToken.AppendText(Environment.NewLine + arg.Line);
                 });
             });
             timer = new Timer(1000);
@@ -92,11 +114,7 @@ namespace WordPicker.GUI
             {
                 UpdateUrlList();
             });
-            //BackgroundWorker worker = new BackgroundWorker();
-            //worker.DoWork += new DoWorkEventHandler((s2, e2) => {
             spider.Start(txtUrl.Text);
-            //});
-            //worker.RunWorkerAsync(txtUrl.Text);
         }
 
         private void UpdateUrlList()

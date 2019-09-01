@@ -61,15 +61,17 @@ namespace PoemEditor
             {
                 Task.Run(() =>
                 {
+                    DebugMessage(arg.Line);
+                    /*
                     switch (arg.Status)
                     {
                         case ExecutionSatus.NewWord:
                             NewWord(arg.Line);
                             break;
-                        case ExecutionSatus.NewJobEnqued:
+                        case ExecutionSatus.EnquedToJob:
                             AddNewJob(arg.Line);
                             break;
-                        case ExecutionSatus.NewUrlAdded:
+                        case ExecutionSatus.NewLink:
                             AddNewUrl(arg.Line);
                             break;
                         case ExecutionSatus.Error:
@@ -79,25 +81,10 @@ namespace PoemEditor
                             DebugMessage(arg.Line);
                             break;
                     }
-
+                    */
                 });
             });
-            spider.Start(url);
-
-            /*
-            update.Tick += new EventHandler((c, r) => {
-                
-                toolStripStatusLabelCount.Text = "" + spider.WorkInProgress;
-                NewWords.Clear();
-                NewWords.AddRange(spider.Words.Keys);
-                WriteLine("==========================");
-                foreach (var w in spider.Words.Keys)
-                {
-                    WriteLine(w);
-                }
-                WriteLine("==========================");
-            });
-            */
+            spider.Start(url);          
         }
 
         public void NewWord(string line)

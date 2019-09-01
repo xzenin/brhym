@@ -26,7 +26,7 @@ namespace BanglaLib
         public int FileCount { get => fileCount; set => fileCount = value; }
         public ConcurrentDictionary<string, LikeWord> NewWordDiscovery { get => newWordDiscovery; set => newWordDiscovery = value; }
 
-        public delegate void WriteLogger(object o, StatusArgs args);
+        public delegate void WriteLogger(object o, ExecutionStatusArgs args);
 
         public event WriteLogger OnWrite;
 
@@ -43,6 +43,10 @@ namespace BanglaLib
         //must be trimmed
         public bool IsBangla(string word)
         {
+            if (string.IsNullOrEmpty(word))
+            {
+                return false;
+            }
             var bangla = word.ToCharArray().Count(c => IsBangla(c));
             return bangla == word.Length;
         }
@@ -56,13 +60,13 @@ namespace BanglaLib
                 foreach (var file in dr.GetFiles("*.json"))
                 {
                     var dks = nextDirectory.Deserialize<LikeDictionary>(file.FullName);
-                    OnWrite(this, new StatusArgs("Read File : " + file.FullName));
+                    OnWrite(this, new ExecutionStatusArgs("Read File : " + file.FullName));
                     likeDictionaries[dks.Start] = dks;
                 }
 
             }else
             {
-                OnWrite(this, new StatusArgs("No file found in source"));
+                OnWrite(this, new ExecutionStatusArgs("No file found in source"));
                return InitializeFolder();
             }
             return likeDictionaries;
@@ -81,7 +85,7 @@ namespace BanglaLib
                 nextDirectory.Serialize(fd, dictionary);
                 likeDictionaries[dictionary.Start] = dictionary;
             }
-            OnWrite(this, new StatusArgs("Intialized the folder " + nextDirectory.RootDirectory));
+            OnWrite(this, new ExecutionStatusArgs("Intialized the folder " + nextDirectory.RootDirectory));
             return likeDictionaries;
         }
         public void WriteBack()
@@ -92,7 +96,7 @@ namespace BanglaLib
                 string fd = "repo_" + kv.Value.Index + ".json";
                 nextDirectory.Serialize(fd, kv.Value);
             }
-            OnWrite(this, new StatusArgs("Written back to folder " + nextDirectory.RootDirectory));
+            OnWrite(this, new ExecutionStatusArgs("Written back to folder " + nextDirectory.RootDirectory));
         }
         public int BreakFile(string fileName)
         {
@@ -110,7 +114,7 @@ namespace BanglaLib
                         if (line == null)
                         {
                             batchCount++;
-                            OnWrite(this, new StatusArgs("Proccing batch count: " + batchCount + " for last batch :" + batchSize));
+                            OnWrite(this, new ExecutionStatusArgs("Proccing batch count: " + batchCount + " for last batch :" + batchSize));
                             bool batchComplete = ProcessBatch(lines.ToArray());
                             finished = true;
                         }
@@ -118,17 +122,17 @@ namespace BanglaLib
                         if(lines.Count() >= batchSize)
                         {
                             batchCount++;
-                            OnWrite(this, new StatusArgs("Starting batch count: " + batchCount + " for batch size :" + batchSize));
+                            OnWrite(this, new ExecutionStatusArgs("Starting batch count: " + batchCount + " for batch size :" + batchSize));
                             bool batchComplete = ProcessBatch(lines.ToArray());
                             lines = new List<string>();
                         }
                     }
                 }
-                OnWrite(this, new StatusArgs("Done for breaking the word for :" + fileName));
+                OnWrite(this, new ExecutionStatusArgs("Done for breaking the word for :" + fileName));
             }
             catch (Exception ex)
             {
-                OnWrite(this, new StatusArgs("Error in breaking the word for :" + fileName));
+                OnWrite(this, new ExecutionStatusArgs("Error in breaking the word for :" + fileName));
             }
             finally
             {
@@ -208,7 +212,7 @@ namespace BanglaLib
                         if(!NewWordDiscovery.ContainsKey(word))
                         {
                             NewWordDiscovery[word] = w;
-                            OnWrite(this, new StatusArgs(word) { Status = ExecutionSatus.NewWord });
+                            OnWrite(this, new ExecutionStatusArgs(word) { Status = ExecutionSatus.NewWord });
                         }
                         lock (lck)
                         {

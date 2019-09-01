@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WordPicker"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded" Icon="/WordPicker;component/db/ICO/005.ico">
+        Title="শব্দরাজি" Height="450" Width="800" Loaded="Window_Loaded" Icon="/WordPicker;component/db/ICO/030.ico">
 
     <DockPanel x:Name="UI" LastChildFill="True" DataContext="{Binding ElementName=ViewModel}">
         <StackPanel DockPanel.Dock="Top">
@@ -67,16 +67,18 @@
         <StatusBar DockPanel.Dock="Bottom">
             <StackPanel Name="statusbar" Orientation="Horizontal">
                 <Label>Loaded:</Label>
-                <TextBox x:Name="txtStatus" Margin="2 5 0 0" Text="{Binding Status}"></TextBox>
+                <TextBox x:Name="txtStatus" Margin="2 5 0 0" Width="200" Text="{Binding Status}"></TextBox>
                 <Label>|</Label>
                 <Label>Word:</Label>
                 <TextBox x:Name="txtWord" Margin="2 5 0 0" Width="200" Text="{Binding Word, UpdateSourceTrigger=PropertyChanged }"></TextBox>
                 <Label>|</Label>
                 <Label>Position:</Label>
-                <TextBox x:Name="txtSequence" Margin="2 5 0 0" Width="100" Text="{Binding Position, UpdateSourceTrigger=PropertyChanged }"></TextBox>
+                <TextBox x:Name="txtSequence" Margin="2 5 0 0" Width="40" Text="{Binding Position, UpdateSourceTrigger=PropertyChanged }"></TextBox>
                 <Label>|</Label>
                 <Label>Progress:</Label>
-                <ProgressBar x:Name="overallProgress" Minimum="0" Maximum="100" Value="75" IsIndeterminate="False" Margin="2 5 0 0"></ProgressBar>
+                <ProgressBar x:Name="overallProgress"  Background="Azure" Minimum="0" Maximum="100" Value="75"  Margin="2 5 0 0">
+                   
+                </ProgressBar>
             </StackPanel>
         </StatusBar>
         <Grid Name="workArea">
@@ -93,8 +95,8 @@
             <DockPanel HorizontalAlignment="Stretch">
                 <RichTextBox x:Name="txtNotepad" KeyUp="TxtNotepad_KeyUp" SelectionChanged="TxtNotepad_SelectionChanged">
                     <FlowDocument>
-                        <Paragraph FontSize="36">Hello, world!</Paragraph>
-                        <Paragraph FontStyle="Italic" TextAlignment="Left" FontSize="14" Foreground="Gray">Thanks to the RichTextBox control, this FlowDocument is completely editable!</Paragraph>
+                        <Paragraph FontSize="36">সুস্বাগতম, লেখক </Paragraph>
+                        <Paragraph FontStyle="Italic" TextAlignment="Left" FontSize="14" Foreground="Gray"> শব্দরাজি ০.৫.০ , আপনাদের স্বাগতম জানাচ্ছে । ব্যবহার করে দেখার জন্য ধন্যবার । - পীযূষকান্তি বিশ্বাস । </Paragraph>
                     </FlowDocument>
                     <RichTextBox.Resources>
                         <Style TargetType="{x:Type Paragraph}">
@@ -113,17 +115,21 @@
                             <GroupBox.Header>
                                 <TextBlock FontWeight="Bold" Text="Contexual Words" Background="#FFC9C5D4"></TextBlock>
                             </GroupBox.Header>
-                            <StackPanel>
+                            <StackPanel Height="100">
                                 <DockPanel FlowDirection="LeftToRight">
                                     <Label Width="60">Word:</Label>
                                     <TextBox x:Name="theWord" Text="{Binding Word }"></TextBox>
                                 </DockPanel>
-                                <DockPanel FlowDirection="LeftToRight">
-                                    <Label Width="60">Suggest:</Label>
-                                    <ComboBox Name="listSuggestion" ItemsSource="{Binding Suggestions}" 
+
+                                <ScrollViewer Height="100">               
+                                    <ListBox Name="listSuggestion" ItemsSource="{Binding Suggestions}" 
                                         SelectedValue="{Binding SelectedSuggestion}" 
-                                        SelectedValuePath="Word" DisplayMemberPath="Word" ></ComboBox>
-                                </DockPanel>
+                                        SelectedValuePath="Word" DisplayMemberPath="Word" 
+                                             MouseDoubleClick="ListSuggestion_MouseDoubleClick"
+                                             KeyUp="ListSuggestion_KeyUp"
+                                             ></ListBox>
+                                </ScrollViewer>
+
                             </StackPanel>
                         </GroupBox>
 
@@ -141,21 +147,35 @@
                                 <GroupBox.Header>
                                     <TextBlock FontWeight="Bold" Text="Starts With"></TextBlock>
                                 </GroupBox.Header>
-                                <StackPanel>
+                               
+                                    <ScrollViewer>
+
                                     <ListBox x:Name="listStartWith" ItemsSource="{Binding StartsWith}" 
-                                        SelectedValue="{Binding SelectedSuggestion}" 
-                                        SelectedValuePath="Word" DisplayMemberPath="Word"  />
-                                </StackPanel>
+                                        SelectedValue="{Binding SelectedStartsWith}" 
+                                        SelectedValuePath="Word" DisplayMemberPath="Word" 
+                                               MouseDoubleClick="StartsWith_MouseDoubleClick"
+                                             KeyUp="ListStartWith_KeyUp"
+                                             />
+                                    </ScrollViewer>
+
+                             
                             </GroupBox>
                             <GroupBox Grid.Row="1" Background="#FFD1DAD2">
                                 <GroupBox.Header>
                                     <TextBlock FontWeight="Bold" Text="Ends With"></TextBlock>
                                 </GroupBox.Header>
-                                <StackPanel>
+                               
+                                    <ScrollViewer>
+
                                     <ListBox x:Name="listEndsWith" ItemsSource="{Binding EndsWith}" 
-                                        SelectedValue="{Binding SelectedSuggestion}" 
-                                        SelectedValuePath="Word" DisplayMemberPath="Word"  />
-                                </StackPanel>
+                                        SelectedValue="{Binding SelectedEndsWith}" 
+                                        SelectedValuePath="Word" DisplayMemberPath="Word" 
+                                               MouseDoubleClick="EndsWith_MouseDoubleClick"
+                                             KeyUp="ListEndsWith_KeyUp"
+                                             />
+
+                                    </ScrollViewer>
+                               
                             </GroupBox>
                         </Grid>
 

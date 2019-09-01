@@ -1,10 +1,12 @@
 ﻿using BanglaLib;
+using BanglaLib.Lib;
 using BanglaLib.Lib.Model;
 using PoemEditor.Config;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -18,7 +20,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using System.Windows.Threading;
 using WordPicker.GUI;
 using WordPicker.Model;
 
@@ -41,12 +43,22 @@ namespace WordPicker
         bool running = false;
         public delegate void UpdateTextCallback(string message);
         MainModel model;
-        public MainModel ViewModel { get {
+        WordBreaker breaker;
+
+        WordManager wordManager;
+
+        public MainModel ViewModel
+        {
+            get
+            {
                 return model;
-            } set {
+            }
+            set
+            {
                 model = value;
                 NotifyPropertyChanged("ViewModel");
-            } }
+            }
+        }
         public MainWindow()
         {
             InitializeComponent();
@@ -57,6 +69,7 @@ namespace WordPicker
             ViewModel.Status = DateTime.Now.ToString();
             ViewModel.Word = DateTime.Now.ToString();
             this.UI.DataContext = model;
+
         }
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string property)
@@ -66,19 +79,14 @@ namespace WordPicker
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
         }
-
-        private void UpdateModelView(object model)
+        private void UpdateModelView(Action code)
         {
-           
-            /*
-            Application.Current.Dispatcher.Invoke(() => {
-               // this.statusbar.DataContext = model;
-                this.statusbar.UpdateUIElement();
-               // this.rightPanel.DataContext = model;
-                this.rightPanel.UpdateUIElement();
+            Task.Run(() =>
+            {
+                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, code);
             });
-            */
         }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             LoadConfig();
@@ -89,6 +97,8 @@ namespace WordPicker
             var opt = app.CreateOption(defaultFile);
             app.WriteOption(defaultFile, opt);
             option = app.ReadOption(option.FileName);
+            breaker = new WordBreaker(option.Location.DBFolder);
+            wordManager = new WordManager(breaker);
         }
         private void WriteLine(string line)
         {
@@ -97,13 +107,13 @@ namespace WordPicker
 
         private void TxtNotepad_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (e.Changes.Count>0)
+            if (e.Changes.Count > 0)
             {
                 dirty = true;
             }
         }
 
-        private  void CollectWord_Click(object sender, RoutedEventArgs e)
+        private void CollectWord_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -111,16 +121,18 @@ namespace WordPicker
                 overallProgress.IsIndeterminate = true;
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.WorkerReportsProgress = true;
-                worker.DoWork += new DoWorkEventHandler( (s1,e1)=> {
-                    WordBreaker breaker = new WordBreaker(option.Location.DBFolder);
+                worker.DoWork += new DoWorkEventHandler((s1, e1) =>
+                {
+
                     string wordFile = System.IO.Path.Combine(option.Location.DBFolder, "Bangla.txt");
                     breaker.InitializeFolder();
-                    breaker.OnWrite += new WordBreaker.WriteLogger((s4, e4) => {
+                    breaker.OnWrite += new WordBreaker.WriteLogger((s4, e4) =>
+                    {
                         if (e4.Status == BanglaLib.Spider.ExecutionSatus.NewWord)
                         {
                             txtConsole.Dispatcher.Invoke(
-                                        new UpdateTextCallback(this.WriteLine),   
-                                        new object[] {e4.Line } );
+                                        new UpdateTextCallback(this.WriteLine),
+                                        new object[] { e4.Line });
                             ViewModel.Word = e4.Line;
                         }
                         else
@@ -131,17 +143,19 @@ namespace WordPicker
                     });
                     breaker.BreakFile(wordFile);
                     breaker.WriteBack();
-                   
+
                 });
-                worker.ProgressChanged += new ProgressChangedEventHandler((s2, e2) => {
+                worker.ProgressChanged += new ProgressChangedEventHandler((s2, e2) =>
+                {
                     WriteLine("String working.");
                 });
-                worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler((s3, e3) => {
+                worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler((s3, e3) =>
+                {
                     WriteLine("Completed word breaking process.");
                 });
                 worker.RunWorkerAsync(10000);
 
-              
+
             }
             catch (Exception ex)
             {
@@ -150,44 +164,19 @@ namespace WordPicker
             finally
             {
                 overallProgress.IsIndeterminate = false;
-            }            
+            }
 
         }
-
-
-        private List<LikeWord> StartsWith(string word)
-        {
-            List<LikeWord> likes = new List<LikeWord>();
-            char firstChar = word[0];
-            var dic = bangla[firstChar];
-            if (dic == null)
-            {
-                likes.Add(
-                    new LikeWord(word)
-                    {
-                        Word = word,
-                        ID = 0,
-                        On = DateTime.Now,
-                        POS = "",
-                        Source = "temp"
-                    });
-            }
-            else
-            {
-                likes = dic.WordList.Where(x => x.Word.StartsWith(word)).ToList();
-            }
-            return likes;
-        }
-
         private void Window_Exit(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
-        private string GetCurrentWord(RichTextBox notepad)
+
+        private TextRange GetCurrentTextRange(RichTextBox notepad)
         {
             TextPointer start = notepad.CaretPosition;
             TextPointer end = notepad.CaretPosition;
-            
+
             string stringBeforeCaret = start.GetTextInRun(LogicalDirection.Backward);
             string stringAfterCaret = start.GetTextInRun(LogicalDirection.Forward);
             int countToMoveLeft = 0;
@@ -195,43 +184,155 @@ namespace WordPicker
 
             for (int i = stringBeforeCaret.Length - 1; i >= 0; --i)
             {
-                if (char.IsLetter(stringBeforeCaret[i]))
+                if (!char.IsWhiteSpace(stringBeforeCaret[i]))
                     ++countToMoveLeft;
                 else break;
             }
 
-
             for (int i = 0; i < stringAfterCaret.Length; ++i)
             {
-                if (char.IsLetter(stringAfterCaret[i]))
+                if (!char.IsWhiteSpace(stringAfterCaret[i]))
                     ++countToMoveRight;
-                else break; 
+                else break;
             }
 
-            start = start.GetPositionAtOffset(-countToMoveLeft); 
-            end = end.GetPositionAtOffset(countToMoveRight); 
+            start = start.GetPositionAtOffset(-countToMoveLeft);
+            end = end.GetPositionAtOffset(countToMoveRight);
             TextRange r = new TextRange(start, end);
-            string text = r.Text;
+            return r;
+        }
+
+        private string GetCurrentWordWithSuggested(RichTextBox notepad, string phrase)
+        {
+            TextRange range = GetCurrentTextRange(notepad);
+            range.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Blue));
+            range.Select(range.Start, range.End);
+            if (string.IsNullOrEmpty(range.Text))
+            {
+                return string.Empty;
+            }
+            range.Text = phrase;
+
+            return phrase;
+        }
+
+        private string GetCurrentWord(RichTextBox notepad)
+        {
+            TextRange range = GetCurrentTextRange(notepad);
+            string text = range.Text;
+            ViewModel.Position = txtNotepad.CaretPosition.GetOffsetToPosition(txtNotepad.CaretPosition).ToString();
             return text;
         }
 
-      
+
         private void TxtNotepad_KeyUp(object sender, KeyEventArgs e)
         {
-            ViewModel.Word = GetCurrentWord(txtNotepad);
-            UpdateModelView(ViewModel);
+           
+            //if (e.Key == Key.F4)
+            //{
+                UpdateModelView(() =>
+                {
+                    ViewModel.Status = "Loading EndsWith";
+                    var listStartWith = wordManager.GetWordByPrefix(ViewModel.Word);
+                    ViewModel.StartsWith.Clear();
+                    listStartWith.ForEach(x =>
+                    {
+                        ViewModel.StartsWith.Add(x);
+                    });
+                    ViewModel.Status = "Loading EndsWith";
+                    var listEndsWith = wordManager.GetWordBySuffix(ViewModel.Word);
+                    ViewModel.EndsWith.Clear();
+                    listEndsWith.ForEach(x =>
+                    {
+                        ViewModel.EndsWith.Add(x);
+                    });
+                });
+            //}
+            //else
+            //{
+                UpdateModelView(() =>
+                {
+                    ViewModel.Word = GetCurrentWord(txtNotepad);
+                    ViewModel.Status = "Loading Suggestion";
+                    var listSuggestion = wordManager.GetWordSuggestion(ViewModel.Word);
+                    ViewModel.Suggestions.Clear();
+                    listSuggestion.ForEach(x =>
+                    {
+                        ViewModel.Suggestions.Add(x);
+                    });
+                });
+            //}
+           
         }
 
         private void TxtNotepad_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            ViewModel.Word = GetCurrentWord(txtNotepad);
-            UpdateModelView(ViewModel);
+            UpdateModelView(() =>
+            {
+                ViewModel.Word = GetCurrentWord(txtNotepad);
+                ViewModel.Status = "Loading Suggestion";
+                var listSuggestion = wordManager.GetWordSuggestion(ViewModel.Word);
+                ViewModel.Suggestions.Clear();
+                listSuggestion.ForEach(x =>
+                {
+                    ViewModel.Suggestions.Add(x);
+                });
+            });
         }
 
         private void CrawlSite_Click(object sender, RoutedEventArgs e)
         {
             CrawlWindow window = new CrawlWindow();
             window.ShowDialog();
+        }
+
+        private void ListSuggestion_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ReplaceText(ViewModel.SelectedSuggestion);
+        }
+        private void StartsWith_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ReplaceText(ViewModel.SelectedStartsWith);
+           
+        }
+        private void EndsWith_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ReplaceText(ViewModel.SelectedEndsWith);
+        }
+        private void ListSuggestion_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                ReplaceText(ViewModel.SelectedSuggestion);
+            }
+        }
+        private void ListStartWith_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                ReplaceText(ViewModel.SelectedStartsWith);               
+            }
+        }
+        private void ListEndsWith_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                ReplaceText(ViewModel.SelectedEndsWith);
+            }
+        }
+        private void ReplaceText(string phrase)
+        {
+            UpdateModelView(() =>
+            {
+                ViewModel.Word = GetCurrentWord(txtNotepad);
+                ViewModel.Position = txtNotepad.CaretPosition.GetOffsetToPosition(txtNotepad.CaretPosition).ToString();
+                ViewModel.Status = "Replacing " + ViewModel.Word + " with " + phrase;
+                if (!string.IsNullOrEmpty(phrase))
+                {
+                    GetCurrentWordWithSuggested(txtNotepad, phrase);
+                }
+            });
+
         }
     }
 }

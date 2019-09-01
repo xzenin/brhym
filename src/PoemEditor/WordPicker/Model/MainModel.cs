@@ -20,13 +20,17 @@ namespace WordPicker.Model
         string status;
         FlowDocument document = new FlowDocument();
 
+        //IList<LikeWord> suggestions = new ObservableCollection<LikeWord>();
+        //IList<LikeWord> startsWith = new ObservableCollection<LikeWord>();
+        //IList<LikeWord> endsWith = new ObservableCollection<LikeWord>();
+
         IList<LikeWord> suggestions = new ObservableCollection<LikeWord>();
         IList<LikeWord> startsWith = new ObservableCollection<LikeWord>();
         IList<LikeWord> endsWith = new ObservableCollection<LikeWord>();
 
         string selectedSuggestion;
-        string selectedStartWidth;
-        string selectedEndsWidth;
+        string selectedStartsWith;
+        string selectedEndsWith;
 
         public MainModel()
         {
@@ -35,6 +39,7 @@ namespace WordPicker.Model
 
         public void Init()
         {
+            /*
             Suggestions.Add(new LikeWord("One" + DateTime.Now.Ticks));
             Suggestions.Add(new LikeWord("Two" + DateTime.Now.Ticks));
             Suggestions.Add(new LikeWord("Three" + DateTime.Now.Ticks));
@@ -46,6 +51,7 @@ namespace WordPicker.Model
             EndsWith.Add(new LikeWord("Sunday" + DateTime.Now.Ticks));
             EndsWith.Add(new LikeWord("Monday" + DateTime.Now.Ticks));
             EndsWith.Add(new LikeWord("Tuesday" + DateTime.Now.Ticks));
+            */
         }
 
         public string WriteLine(string line)
@@ -169,24 +175,24 @@ namespace WordPicker.Model
                 }
             }
         }
-        public string SelectedStartWidth
+        public string SelectedStartsWith
         {
-            get => selectedStartWidth; set
+            get => selectedStartsWith; set
             {
-                if (selectedStartWidth != value)
+                if (selectedStartsWith != value)
                 {
-                    selectedStartWidth = value;
+                    selectedStartsWith = value;
                     OnPropertyChanged("SelectedStartWidth");
                 }
             }
         }
-        public string SelectedEndsWidth
+        public string SelectedEndsWith
         {
-            get => selectedEndsWidth; set
+            get => selectedEndsWith; set
             {
-                if (selectedEndsWidth != value)
+                if (selectedEndsWith != value)
                 {
-                    selectedEndsWidth = value;
+                    selectedEndsWith = value;
                     OnPropertyChanged("SelectedEndsWidth");
                 }
             }

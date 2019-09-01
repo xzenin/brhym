@@ -62,6 +62,12 @@ namespace WordPicker.Model
             // OnPropertyChanged("UrlInDB");
             return model;
         }
+        public FetchModel RomoveFromProgress(FetchModel model)
+        {
+            UrlInProgress.Remove(model);
+            // OnPropertyChanged("UrlInDB");
+            return model;
+        }
 
         public FetchModel AddToDone(FetchModel model)
         {

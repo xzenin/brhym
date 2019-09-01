@@ -12,15 +12,15 @@
                 <MenuItem Header="File">
                     <MenuItem Header="New">
 
-                    </MenuItem> 
+                    </MenuItem>
                     <Separator />
                     <MenuItem Header="Exit" >
 
                     </MenuItem>
                 </MenuItem>
-               
+
             </Menu>
-         
+
         </StackPanel>
 
         <StatusBar DockPanel.Dock="Bottom">
@@ -42,7 +42,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
@@ -50,18 +50,30 @@
             </Grid.RowDefinitions>
 
             <DockPanel HorizontalAlignment="Stretch">
-                <ScrollViewer>
-                <RichTextBox x:Name="txtNotepad" >
-                    <FlowDocument>
-                        <Paragraph FontStyle="Italic" TextAlignment="Left" FontSize="14" Foreground="Gray">Thanks to the RichTextBox control, this FlowDocument is completely editable!</Paragraph>
-                    </FlowDocument>
-                    <RichTextBox.Resources>
-                        <Style TargetType="{x:Type Paragraph}">
-                            <Setter Property="Margin" Value="0" />
-                        </Style>
-                    </RichTextBox.Resources>
-                </RichTextBox>
-                </ScrollViewer>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer Grid.Row="0">
+                        <TextBox x:Name="txtToken" 
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"                             
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             ScrollViewer.CanContentScroll="True">
+
+                        </TextBox>
+                    </ScrollViewer>
+
+                    <ScrollViewer Grid.Row="1">
+                        <TextBox x:Name="txtNotepad" >
+                        </TextBox>
+                    </ScrollViewer>
+                </Grid>
             </DockPanel>
 
             <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch" Background="#CCDDAA"/>
@@ -84,7 +96,7 @@
                                         <Button x:Name="btnGo" Padding="10 0 10 0" Margin="10 0 5 0 " Click="BtnGo_Click">GO</Button>
                                         <Button x:Name="btnCancel"  Padding="10 0 10 0" Margin="5 0 10 0 " Click="BtnCancel_Click" >Stop</Button>
                                     </StackPanel>
-                                
+
                                 </DockPanel>
                             </StackPanel>
                         </GroupBox>
@@ -103,62 +115,62 @@
                                 <GroupBox.Header>
                                     <TextBlock FontWeight="Bold" Text="Working Queue"></TextBlock>
                                 </GroupBox.Header>
-                                <StackPanel>
-                                   
-                                        <ListView x:Name="listWorkingQueue"    VerticalContentAlignment="Top"  
+
+
+                                <ListView x:Name="listWorkingQueue"    VerticalContentAlignment="Top"  
           ScrollViewer.VerticalScrollBarVisibility="Visible"
           ScrollViewer.CanContentScroll="False" ItemsSource="{Binding UrlInProgress }">
-                                            <ListView.View>
-                                                <GridView>
-                                                   
-                                                    <GridViewColumn Header="Url" Width="100">
-                                                        <GridViewColumn.CellTemplate>
-                                                            <DataTemplate>
-                                                                <TextBlock Text="{Binding Url}" TextDecorations="Underline" Foreground="Blue" Cursor="Hand" />
-                                                            </DataTemplate>
-                                                        </GridViewColumn.CellTemplate>
-                                                    </GridViewColumn>
-                                                    <GridViewColumn Header="Status" Width="70" DisplayMemberBinding="{Binding StatusText}" />
-                                                    <GridViewColumn Header="Domain" Width="100" DisplayMemberBinding="{Binding Domain}" />
-                                                </GridView>
-                                            </ListView.View>
-                                        </ListView>  
-                                  
-                                </StackPanel>
+                                    <ListView.View>
+                                        <GridView>
+
+                                            <GridViewColumn Header="Url" Width="100">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Url}" TextDecorations="Underline" Foreground="Blue" Cursor="Hand" />
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Status" Width="70" DisplayMemberBinding="{Binding StatusText}" />
+                                            <GridViewColumn Header="Domain" Width="100" DisplayMemberBinding="{Binding Domain}" />
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+
+
                             </GroupBox>
                             <GroupBox Grid.Row="1" Background="#FFD1DAD2">
                                 <GroupBox.Header>
                                     <TextBlock FontWeight="Bold" Text="Database Links Pages"></TextBlock>
                                 </GroupBox.Header>
-                                <StackPanel>
-                                    
-                                        <ListView x:Name="listEndsWith"    VerticalContentAlignment="Top"  
+
+
+                                <ListView x:Name="listEndsWith"    VerticalContentAlignment="Top"  
           ScrollViewer.VerticalScrollBarVisibility="Visible"
           ScrollViewer.CanContentScroll="False" ItemsSource="{Binding UrlInDB}">
-                                            <ListView.View>
-                                                <GridView>
+                                    <ListView.View>
+                                        <GridView>
 
-                                                    <GridViewColumn Header="Url" Width="100">
-                                                        <GridViewColumn.CellTemplate>
-                                                            <DataTemplate>
-                                                                <TextBlock Text="{Binding Url}" TextDecorations="Underline" Foreground="Blue" Cursor="Hand" />
-                                                            </DataTemplate>
-                                                        </GridViewColumn.CellTemplate>
-                                                    </GridViewColumn>
-                                                    <GridViewColumn Header="Status" Width="70" DisplayMemberBinding="{Binding StatusText}" />
-                                                    <GridViewColumn Header="Domain" Width="100" DisplayMemberBinding="{Binding Domain}" />
-                                                </GridView>
-                                            </ListView.View>
-                                        </ListView>
-                                   
-                                </StackPanel>
+                                            <GridViewColumn Header="Url" Width="100">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Url}" TextDecorations="Underline" Foreground="Blue" Cursor="Hand" />
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Status" Width="70" DisplayMemberBinding="{Binding StatusText}" />
+                                            <GridViewColumn Header="Domain" Width="100" DisplayMemberBinding="{Binding Domain}" />
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+
+
                             </GroupBox>
                         </Grid>
 
                     </DockPanel>
                 </TabItem>
                 <TabItem Header="Console" Name="logBack">
-                    
+
                     <TextBox x:Name="txtConsole" Text="{Binding Text}" 
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"                             
                              ScrollViewer.VerticalScrollBarVisibility="Auto"

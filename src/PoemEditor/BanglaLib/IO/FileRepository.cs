@@ -42,6 +42,12 @@ namespace BanglaLib
             File.WriteAllText(fullName, content);
             return content;
         }
+        public string AppendContent(string fileName, string content)
+        {
+            string fullName = GetFullFileName(fileName);
+            File.AppendAllText(fullName, content, Encoding.UTF8);
+            return content;
+        }
         public T Deserialize<T>(string fileName)
         {
             var json = ReadContent(fileName);
